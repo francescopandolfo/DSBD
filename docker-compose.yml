@@ -1,0 +1,12 @@
+#https://github.com/mcicolella/spring-boot-microservices/tree/master
+#https://github.com/mirianacorsaro/DSBD-project/tree/main
+
+version: '3.8'
+
+services:
+  gettimeseries:
+    build:
+      dockerfile: Dockerfile
+      context: ./get-time-series
+    ports:
+      - 8001:8080
