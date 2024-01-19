@@ -5,11 +5,14 @@ import org.springframework.stereotype.Service;
 import dsbd.gettimeseries.models.TimeSeries;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import org.json.*;
 //import java.util.Optional;
 
 
@@ -17,12 +20,14 @@ import java.net.HttpURLConnection;
 public class TimeSeriesService {
     private String INFLUXDB_URL = "http://10.200.81.108:8086/query";
     private String INFLUXDB_DATABASE = "oe";
-    private String INFLUXDB_SAMPLEQUERY = "SELECT * FROM SPIDER.%s WHERE reference_site = 'ENIC' and time >= '%sT00:00:00Z' and time <= '%sT23:59:59Z' limit 10";
-    private String INFLUXDB_PARAMS = "db=" + INFLUXDB_DATABASE + "&q=" + INFLUXDB_SAMPLEQUERY;
+    private String INFLUXDB_QUERY_FROM_TO = "SELECT * FROM SPIDER.%s WHERE reference_site = 'ENIC' and time >= '%sT00:00:00Z' and time <= '%sT23:59:59Z' limit 1000";
+    private String INFLUXDB_QUERY_LAST = "SELECT * FROM SPIDER.%s WHERE reference_site = 'ENIC' and time >= now() - %s and time <= now() ";
+    private String INFLUXDB_QUERY_LAST_GROUPED = "SELECT time, last(site) as site, median(delta_north) as delta_north, median(delta_east) as delta_east, median(delta_up) as delta_up, median(splp_op) as splp_op FROM SPIDER.%s WHERE reference_site = 'ENIC' and time >= now() - %s and time <= now() GROUP BY time(%s/1000)";
+    private String INFLUXDB_PARAMS = "";
     
     public String get(TimeSeries ts){
         //return String.format("%s - %s - %s", ts.getStationcode(), ts.getStartdate(), ts.getEnddate());
-        return createQuery_Influxdb(ts);
+        return JsonRawToJsonDataFrame(createQuery_Influxdb(ts));
     }
 
     private String createQuery_Influxdb(TimeSeries ts) {
@@ -35,7 +40,23 @@ public class TimeSeriesService {
             connToInfluxdb.setRequestMethod("GET");
             //connToInfluxdb.setRequestProperty("Content-Type", "application/json");
 
-            return sendHTTPRequest(InfluxdbUrl, connToInfluxdb, String.format(INFLUXDB_PARAMS, ts.getStationcode(), ts.getStartdate(), ts.getEnddate() ));
+            if(ts.getLast() != null ){
+                if(ts.getLast().toUpperCase().contains("D")){
+                    INFLUXDB_PARAMS = "db=" + INFLUXDB_DATABASE + "&q=" + INFLUXDB_QUERY_LAST_GROUPED;
+                    return sendHTTPRequest(InfluxdbUrl, connToInfluxdb, String.format(INFLUXDB_PARAMS, ts.getStationcode(), ts.getLast(), ts.getLast() ));
+                }
+                else{
+                    INFLUXDB_PARAMS = "db=" + INFLUXDB_DATABASE + "&q=" + INFLUXDB_QUERY_LAST;
+                    return sendHTTPRequest(InfluxdbUrl, connToInfluxdb, String.format(INFLUXDB_PARAMS, ts.getStationcode(), ts.getLast() ));
+                }
+                
+            }
+            else{
+                INFLUXDB_PARAMS = "db=" + INFLUXDB_DATABASE + "&q=" + INFLUXDB_QUERY_FROM_TO;
+                return sendHTTPRequest(InfluxdbUrl, connToInfluxdb, String.format(INFLUXDB_PARAMS, ts.getStationcode(), ts.getStartdate(), ts.getEnddate()));
+            }
+            
+            
             //connToInfluxdb.setReadTimeout(6000);
         }
         catch(Exception ex){
@@ -63,6 +84,46 @@ public class TimeSeriesService {
 
         in.close();
         return response.toString();        
+    }
+
+    private String JsonRawToJsonDataFrame(String json_raw){
+        String toReturn = "{ \"dataframe\" : [] }";
+        try{
+            JSONObject obj = new JSONObject(json_raw);
+            JSONObject _results = (JSONObject)obj.getJSONArray("results").get(0);
+            if(_results.has("series")){
+                JSONObject series = (JSONObject)((JSONObject)obj.getJSONArray("results").get(0)).getJSONArray("series").get(0);
+  
+                /* estraggo i campi per ricavarne gli indici*/
+                ArrayList<String> columns = new ArrayList<String>();     
+                JSONArray _columns = series.getJSONArray("columns"); 
+                if (_columns != null)
+                    for (int i=0; i<_columns.length(); i++)columns.add(_columns.getString(i));
+                
+                String jsonForDataFrame = "{ \"dataframe\" : [";
+                JSONArray _records = series.getJSONArray("values");
+                for(int i = 0; i < _records.length(); i++){
+                    jsonForDataFrame += String.format("{\"time\": \"%s\",", ((JSONArray)_records.get(i)).get(columns.indexOf("time")));
+                    jsonForDataFrame += String.format("\"site\": \"%s\",", ((JSONArray)_records.get(i)).get(columns.indexOf("site")));
+                    jsonForDataFrame += String.format("\"delta_north\": %s,", ((JSONArray)_records.get(i)).get(columns.indexOf("delta_north")));
+                    jsonForDataFrame += String.format("\"delta_east\": %s,", ((JSONArray)_records.get(i)).get(columns.indexOf("delta_east")));
+                    jsonForDataFrame += String.format("\"delta_up\": %s,", ((JSONArray)_records.get(i)).get(columns.indexOf("delta_up")));
+                    jsonForDataFrame += String.format("\"splp_op\": %s", ((JSONArray)_records.get(i)).get(columns.indexOf("splp_op")));
+                    jsonForDataFrame += "},";
+                }
+                jsonForDataFrame = jsonForDataFrame.substring(0, jsonForDataFrame.length()-1);
+                jsonForDataFrame += "]}";
+                    
+                toReturn = jsonForDataFrame;
+            }
+            
+        }
+        catch(Exception ex){
+            toReturn = ex.getMessage();
+        }
+        
+
+        return toReturn;
     }
 
 }

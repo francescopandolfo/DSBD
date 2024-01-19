@@ -16,13 +16,6 @@
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
-        },
-        {
-            "type": "java",
-            "name": "Launch get-time-series",
-            "request": "launch",
-            "mainClass": "GetTimeSeriesApplication",
-            "projectName": "asda"
         }
     ]
 }
