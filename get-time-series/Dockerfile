@@ -1,11 +1,11 @@
 FROM maven:3.6-openjdk-17 AS build
 
-COPY src /usr/src/get-time-series/src
-COPY pom.xml /usr/src/get-time-series
-RUN mvn -f /usr/src/get-time-series/pom.xml clean package
+COPY src /home/app/src
+COPY pom.xml /home/app
+RUN mvn -f /home/app/pom.xml clean package
 
 FROM openjdk:17-alpine
-COPY --from=build /usr/src/get-time-series/target/get-time-series-0.0.1-SNAPSHOT.jar /usr/get-time-series/get-time-series-0.0.1-SNAPSHOT.jar
+COPY --from=build /home/app/target/get-time-series-0.0.1-SNAPSHOT.jar /home/app-SNAPSHOT.jar
 
 EXPOSE 8001
-ENTRYPOINT ["java", "-jar", "/usr/get-time-series/get-time-series-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "/home/app-SNAPSHOT.jar"]

@@ -6,6 +6,40 @@
     "configurations": [
         {
             "type": "java",
+            "name": "UsersManagerApplication",
+            "request": "launch",
+            "mainClass": "dsbd.usersmanager.UsersManagerApplication",
+            "projectName": "dsbd-users-manager"
+        },
+        {
+            "type": "java",
+            "name": "UserManagerApplication",
+            "request": "launch",
+            "mainClass": "dsbd.usermanager.UserManagerApplication",
+            "projectName": "dsbd-user-manager"
+        },
+        {
+            "type": "java",
+            "name": "UserManagerApplication",
+            "request": "launch",
+            "mainClass": "dsbd.usermanager.UserManagerApplication",
+            "projectName": "pandolfo_6eb4f61b"
+        },
+        {
+            "type": "java",
+            "name": "Ecomm1Application",
+            "request": "launch",
+            "mainClass": "com.example.ecomm1.Ecomm1Application"
+        },
+        {
+            "type": "java",
+            "name": "UsersManagerApplication",
+            "request": "launch",
+            "mainClass": "dsbd.usersmanager.UsersManagerApplication",
+            "projectName": "users-manager"
+        },
+        {
+            "type": "java",
             "name": "GetTimeSeriesApplication",
             "request": "launch",
             "mainClass": "dsbd.gettimeseries.GetTimeSeriesApplication",

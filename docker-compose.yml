@@ -5,8 +5,44 @@ version: '3.8'
 
 services:
   gettimeseries:
+    container_name: gettimeseries
     build:
       dockerfile: Dockerfile
       context: ./get-time-series
     ports:
       - 8001:8080
+    networks:
+      - dsbd-net
+
+  mysqldb:
+    image: "mysql"
+    restart: always
+    container_name: mysqldb
+    networks:
+      - dsbd-net
+    environment:
+      MYSQL_DATABASE: dsbd-pandolfo
+      MYSQL_USER: francesco
+      MYSQL_PASSWORD: pandolfo
+      MYSQL_ROOT_PASSWORD: toor
+      MYSQL_HOST: localhost
+    ports:
+      - 6033:3306
+    volumes:
+      - ./data/db:/var/lib/mysql  #eseguire prima: mkdir -p ./data/db
+  
+  usersmanager:
+    container_name: usersmanager
+    build:
+      dockerfile: Dockerfile
+      context: ./users-manager
+    restart: always
+    depends_on:
+      - mysqldb
+    ports:
+      - 8002:8080
+    networks:
+      - dsbd-net
+
+networks:
+  dsbd-net:
