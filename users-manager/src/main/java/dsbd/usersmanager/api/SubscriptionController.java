@@ -27,4 +27,9 @@ public class SubscriptionController {
     public @ResponseBody Iterable<Subscription> getAll(){
         return service.getAll();
     }
+
+    @PostMapping(path = "/kafka")   //usato per verificare l'invio dei messaggi su kafka
+    public @ResponseBody void publish(@RequestBody String message){
+        service.publishLogOnTopic(message);
+    }
 }

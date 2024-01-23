@@ -7,5 +7,4 @@ RUN mvn -f /home/app/pom.xml clean package
 FROM openjdk:17-alpine
 COPY --from=build /home/app/target/get-time-series-0.0.1-SNAPSHOT.jar /home/app-SNAPSHOT.jar
 
-EXPOSE 8001
 ENTRYPOINT ["java", "-jar", "/home/app-SNAPSHOT.jar"]

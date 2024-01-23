@@ -9,7 +9,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 
 public class ProducerKafka {
     
-    private static String BOOTSTRAP_SERVER = "localhost:29092";
+    private static String BOOTSTRAP_SERVER = "kafka:9092";
 
     /* args[0] = topic
      * args[1] = message */

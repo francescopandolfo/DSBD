@@ -22,6 +22,7 @@ public class UsersManagerApplication {
 		//displayAllBeans();
 		//ProducerKafka.main(args);
 		SubscriptionService subS = (SubscriptionService)applicationContext.getBean("subscriptionService");
+		subS.publishLogOnTopic("INVOKE thread processSubscription ... ");
 
 		new Thread(() -> {
 			subS.processSubscriptions();
