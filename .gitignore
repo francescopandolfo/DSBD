@@ -41,3 +41,4 @@ data/db/server-cert.pem
 data/db/server-key.pem
 data/db/undo_001
 data/db/undo_002
+data/db/binlog.000006

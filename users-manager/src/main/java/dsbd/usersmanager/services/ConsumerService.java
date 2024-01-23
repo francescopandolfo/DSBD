@@ -15,4 +15,8 @@ public class ConsumerService {
     public Consumer add(Consumer cons){
         return repository.save(cons);
     }
+
+    public Iterable<Consumer> getAll(){
+        return repository.findAll();
+    }
 }

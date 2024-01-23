@@ -2,6 +2,7 @@ package dsbd.usersmanager.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,11 @@ public class ConsumerController {
     @PostMapping(path= "/register")
     public @ResponseBody Consumer register(@RequestBody Consumer cons){
         return service.add(cons);
+    }
+
+    @GetMapping(path = "/getall")
+    public @ResponseBody Iterable<Consumer> getAll(){
+        return service.getAll();
     }
 
 }

@@ -63,6 +63,13 @@
 			<scope>system</scope>
 			<systemPath>${basedir}/src/main/resources/lib/kafka-clients-3.6.1.jar</systemPath>
 		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>java-json</artifactId>
+			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/src/main/resources/lib/java-json.jar</systemPath>
+		</dependency>
 	</dependencies>
 
 	<build>

@@ -16,7 +16,7 @@ public class Subscription {
     private String username, station;
 
     @NotNull(message = "mandatory field!")
-    private Integer threshold, mintime;
+    private Integer threshold, mintime; //threshold espressa in mm
 
     public int getId(){ return id; }
     public String getUsername(){ return username; }

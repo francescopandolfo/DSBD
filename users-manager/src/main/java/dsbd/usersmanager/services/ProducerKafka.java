@@ -8,14 +8,16 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 public class ProducerKafka {
+    
+    private static String BOOTSTRAP_SERVER = "localhost:29092";
 
+    /* args[0] = topic
+     * args[1] = message */
     public static void main(String[] args) {
-
-        String bootstrapServers = "127.0.0.1:9092";
 
         // create Producer properties
         Properties properties = new Properties();
-        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVER);
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
@@ -23,7 +25,7 @@ public class ProducerKafka {
         KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
 
         // create a producer record
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>("demo_java_2", "hello world!!!!!");
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(args[0], args[1]);
 
         // send data - asynchronous
         producer.send(producerRecord);
