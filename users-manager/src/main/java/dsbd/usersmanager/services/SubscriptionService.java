@@ -9,11 +9,13 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import org.json.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import dsbd.usersmanager.models.Subscription;
@@ -23,16 +25,23 @@ import dsbd.usersmanager.models.SubscriptionRepository;
 @Service
 public class SubscriptionService {
 
-   DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
+    @Value("${dsbd.gettimeseries.url}")
+    private String GETTIMESERIES_URL;
 
-    //private String GETTIMESERIES_URL = "http://10.200.180.237:8001/gettimeseries/query";
-    private String GETTIMESERIES_URL = "http://gettimeseries:8080/gettimeseries/query";
-    
+    private String GETTIMESERIES_URL_QUERY = GETTIMESERIES_URL + "/query";
+
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
+
     @Autowired
     private SubscriptionRepository repository;
 
     public Subscription add(Subscription sub){
+        //Subscription newOne = new Subscription(sub.),);
         return repository.save(sub);
+    }
+
+    public void remove(Subscription sub){
+        repository.delete(sub);
     }
 
     public Iterable<Subscription> getAll(){
@@ -58,9 +67,15 @@ public class SubscriptionService {
                     }
                 }
                 else{
+                    ArrayList<String> subAlreadyProcessed = new ArrayList<String>();
                     for( Subscription x : getAll() ){   //interrogando ad ogni ciclo il db saranno processate anche le nuove sottoscrizioni
-                        publishLogOnTopic(String.format("%s: CHECK %s-%s-%s ... ", x.getUsername(), x.getStation(), x.getThreshold(), x.getMintime()));
-                        checkDataOverLimit(x);
+                        String sub = String.format("%s-%s-%s", x.getStation(),x.getThreshold(),x.getMintime());
+                        if(!subAlreadyProcessed.contains(sub)){ //se più consumers si iscrivono allo stesso topic questo deve essere processato una sola volta: sarà il broker a notificare ad entrambi
+                            publishLogOnTopic(String.format("CHECK %s ... ", sub));
+                            checkDataOverLimit(x);
+                            subAlreadyProcessed.add(sub);
+                        }
+                            
                     }
                 }
                 
@@ -82,7 +97,7 @@ public class SubscriptionService {
                 String params = String.format(_params, sub.getStation(), sub.getMintime() );
                 
                 publishLogOnTopic("... START checkDataOverLimit");        
-                JSONObject res = new JSONObject( sendHTTPRequest(GETTIMESERIES_URL, params));
+                JSONObject res = new JSONObject( sendHTTPRequest(GETTIMESERIES_URL_QUERY, params));
                 JSONArray serie = res.getJSONArray("dataframe");
                 boolean sopraSoglia = false;
                 boolean sottoSoglia = false;
@@ -126,7 +141,7 @@ public class SubscriptionService {
 
         byte[] params_bytes = params.getBytes( StandardCharsets.UTF_8 );
 
-        URL getTimeSeriesUrl = new URL(GETTIMESERIES_URL);
+        URL getTimeSeriesUrl = new URL(GETTIMESERIES_URL_QUERY);
         HttpURLConnection conn = (HttpURLConnection) getTimeSeriesUrl.openConnection();
         conn.setDoOutput(true);
         conn.setRequestMethod("POST");

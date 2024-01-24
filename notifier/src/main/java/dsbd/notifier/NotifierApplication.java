@@ -15,12 +15,12 @@ import dsbd.notifier.services.ConsumerService;
 public class NotifierApplication {
 
 	private static String GROUP_ID = "defo-group";
-	private static ArrayList<String> oldSubs; //usata per verificare se vengono creati nuovi topic o eliminati di esistenti
+	private static ArrayList<String> oldThreads; //usata per verificare se vengono creati nuovi topic o eliminati di esistenti
 
 	public static void main(String[] args) {
 		SpringApplication.run(NotifierApplication.class, args);
 
-		oldSubs = new ArrayList<String>();
+		oldThreads = new ArrayList<String>();
 		subscribeTopics();
 
 		new Thread(() -> {
@@ -36,14 +36,19 @@ public class NotifierApplication {
 			JSONArray subs = new JSONArray(_subs);
 			for (int i = 0; i < subs.length(); i++){
 				JSONObject sub = (JSONObject)subs.get(i);
-				String[] args = new String[2];
-				args[0] = String.format( "%s-%s-%s", sub.get("station"), sub.get("threshold"), sub.get("mintime") ); //nome del topic
-				args[1] = GROUP_ID;
-				if( !oldSubs.contains(args[0]) ) oldSubs.add(args[0]);
+				
+				String[] args = new String[5];
+				args[0] = GROUP_ID;
+				args[1] = (String)sub.get("username");
+				args[2] = (String)sub.get("station");
+				args[3] = sub.get("threshold").toString();
+				args[4] = sub.get("mintime").toString();
+
+				String nomeThread = String.format("%s-%s-%s-%s",args[1],args[2],args[3],args[4]);
 
 				new Thread(() -> {
 					ConsumerKafka.main(args);
-				}, args[0]).start();
+				}, nomeThread).start();	
 			}
 		}
 		catch(Exception ex){}
@@ -58,19 +63,23 @@ public class NotifierApplication {
 					JSONArray subs = new JSONArray(_subs);
 					for (int i=0; i < subs.length(); i++){
 						JSONObject sub = (JSONObject)subs.get(i);
-						String nomeTopic = String.format( "%s-%s-%s", sub.get("station"), sub.get("threshold"), sub.get("mintime") );
-						if( !oldSubs.contains(nomeTopic) ){
+						String nomeThread = String.format( "%s-%s-%s-%s", sub.get("username"), sub.get("station"), sub.get("threshold"), sub.get("mintime") );
+						if( !oldThreads.contains(nomeThread) ){
 							//nuova sottoscrizione
-							String[] args = new String[2];
-							args[0] = nomeTopic;
-							args[1] = GROUP_ID;
-							oldSubs.add(args[0]);
+							String[] args = new String[5];
+							args[0] = GROUP_ID;
+							args[1] = (String)sub.get("username");
+							args[2] = (String)sub.get("station");
+							args[3] = sub.get("threshold").toString();
+							args[4] = sub.get("mintime").toString();
 
-							Thread thNuovo = getThreadByName(args[0]);
+							oldThreads.add(nomeThread);
+
+							Thread thNuovo = getThreadByName(nomeThread);
 							if(thNuovo == null){
 								new Thread(() -> {
 									ConsumerKafka.main(args);
-								}, args[0]).start();
+								}, nomeThread).start();
 							}
 							else if (thNuovo.isInterrupted()) thNuovo.start(); //esisteva in passato ma era stato fermato 					
 						}
@@ -78,12 +87,12 @@ public class NotifierApplication {
 
 					//verifica sottoscrizioni cancellate
 					ArrayList<String> daCancellare = new ArrayList<>();
-					for(String x : oldSubs){
+					for(String x : oldThreads){
 						Boolean ancoraAttivo = false; 
 						for( int i=0; i<subs.length(); i++ ){
 							JSONObject sub = (JSONObject)subs.get(i);
-							String nomeTopic = String.format( "%s-%s-%s", sub.get("station"), sub.get("threshold"), sub.get("mintime") );
-							if(nomeTopic.equals(x)){
+							String nomeThread = String.format( "%s-%s-%s-%s", sub.get("username"), sub.get("station"), sub.get("threshold"), sub.get("mintime") );
+							if(nomeThread.equals(x)){
 								ancoraAttivo = true;
 								break;	
 							}
@@ -95,7 +104,7 @@ public class NotifierApplication {
 						}
 					}
 					
-					for(String x : daCancellare) oldSubs.remove(x);
+					for(String x : daCancellare) oldThreads.remove(x);
 				}
 				catch(Exception ex){}
 

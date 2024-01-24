@@ -1,5 +1,7 @@
 package dsbd.usersmanager.services;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,5 +20,9 @@ public class ConsumerService {
 
     public Iterable<Consumer> getAll(){
         return repository.findAll();
+    }
+
+    public Optional<Consumer> get(String username){
+        return repository.findByUsername(username);
     }
 }

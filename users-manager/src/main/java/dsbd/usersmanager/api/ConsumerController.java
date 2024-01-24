@@ -1,8 +1,11 @@
 package dsbd.usersmanager.api;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +29,11 @@ public class ConsumerController {
     @GetMapping(path = "/getall")
     public @ResponseBody Iterable<Consumer> getAll(){
         return service.getAll();
+    }
+
+    @GetMapping(path= "/{username}")
+    public @ResponseBody Optional<Consumer> get(@PathVariable String username){ //usato dal notifier per ricevere l'email del consumer a cui inviare la notifica
+        return service.get(username);
     }
 
 }

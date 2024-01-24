@@ -6,16 +6,16 @@
     "configurations": [
         {
             "type": "java",
-            "name": "NotifierApplication",
-            "request": "launch",
-            "mainClass": "dsbd.notifier.NotifierApplication"
-        },
-        {
-            "type": "java",
             "name": "UsersManagerApplication",
             "request": "launch",
             "mainClass": "dsbd.usersmanager.UsersManagerApplication",
-            "projectName": "users-manager"
+            "projectName": "dsbd-users-manager"
+        },
+        {
+            "type": "java",
+            "name": "NotifierApplication",
+            "request": "launch",
+            "mainClass": "dsbd.notifier.NotifierApplication"
         },
         {
             "type": "java",

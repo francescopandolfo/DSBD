@@ -6,13 +6,17 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.stereotype.Service;
 
 @Service
 public class ConsumerService {
 
+    
     private static String USERSMANAGER_URL = "http://localhost:8002/subscriptions/getall";
+    //private static String USERSMANAGER_URL = "http://usersmanager:8080/subscriptions/getall";
     
     public static String getSubscriptions(){
         String toReturn = "NO RESPONSE!";

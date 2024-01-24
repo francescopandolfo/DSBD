@@ -1,6 +1,8 @@
 package dsbd.notifier.services;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -9,14 +11,24 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class ConsumerKafka {
+
+    @Autowired
+    EmailService eService;
     
-    private static String BOOTSTRAP_SERVER = "localhost:29092";
+    static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    //private static String BOOTSTRAP_SERVER = "kafka:9092";
+    private static String BOOTSTRAP_SERVER = "localhost:29092"; //per il debug
 
     public static void main(String[] args) {
-        String topic = args[0];
-        String groupId = args[1];
+        String topic = String.format( "%s-%s-%s", args[2],args[3],args[4] ); //nome del topic: DEVE ESSERE uguale a quello prodotto dal microservizio usersmanager
+        String groupId      = args[0];
+        String username     = args[1];
+        String station      = args[2];
+        String threshold    = args[3];
+        String mintime      = args[4];
         
 
         // create consumer configs
@@ -40,8 +52,24 @@ public class ConsumerKafka {
 
             for (ConsumerRecord<String, String> record : records){
                 System.out.println("Topic: " + topic + ", Value: " + record.value());
-                //System.out.println("Partition: " + record.partition() + ", Offset:" + record.offset());
+                
+                publishLogOnTopic(String.format("%s -> Invio notifica a \"%s\"", topic, username));
+                EmailService eService = new EmailService();
+                //eService.newEmail(username, topic, station, threshold, mintime);
             }
+        }
+    }
+
+    public static void publishLogOnTopic(String message){
+        LocalDateTime now = LocalDateTime.now();
+        String[] args = new String[2];
+        args[0] = "notifier_LOG";
+        args[1] = String.format("%s -> %s", dtf.format(now), message);
+        try{            
+            ProducerKafka.main(args);
+        }
+        catch(Exception ex){
+
         }
     }
 
