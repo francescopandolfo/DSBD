@@ -19,8 +19,9 @@ public class ConsumerKafka {
     EmailService eService;
     
     static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-    //private static String BOOTSTRAP_SERVER = "kafka:9092";
-    private static String BOOTSTRAP_SERVER = "localhost:29092"; //per il debug
+    
+    private static String BOOTSTRAP_SERVER = "kafka:9092";
+    //private static String BOOTSTRAP_SERVER = "localhost:29092"; //solo per il debug
 
     public static void main(String[] args) {
         String topic = String.format( "%s-%s-%s", args[2],args[3],args[4] ); //nome del topic: DEVE ESSERE uguale a quello prodotto dal microservizio usersmanager
@@ -55,7 +56,7 @@ public class ConsumerKafka {
                 
                 publishLogOnTopic(String.format("%s -> Invio notifica a \"%s\"", topic, username));
                 EmailService eService = new EmailService();
-                //eService.newEmail(username, topic, station, threshold, mintime);
+                eService.newEmail(username, topic, station, threshold, mintime);
             }
         }
     }

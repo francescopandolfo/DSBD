@@ -9,8 +9,8 @@ import org.apache.kafka.common.serialization.StringSerializer;
 
 public class ProducerKafka {
     
-    //private static String BOOTSTRAP_SERVER = "kafka:9092";
-    private static String BOOTSTRAP_SERVER = "localhost:29092"; //per il debug
+    private static String BOOTSTRAP_SERVER = "kafka:9092";
+    //private static String BOOTSTRAP_SERVER = "localhost:29092"; //solo per il debug
 
     /* args[0] = topic
      * args[1] = message */

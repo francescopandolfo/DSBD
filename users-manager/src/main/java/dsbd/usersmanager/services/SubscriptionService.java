@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 import org.json.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import dsbd.usersmanager.models.Subscription;
@@ -25,8 +24,14 @@ import dsbd.usersmanager.models.SubscriptionRepository;
 @Service
 public class SubscriptionService {
 
-    @Value("${dsbd.gettimeseries.url}")
-    private String GETTIMESERIES_URL;
+    //@Autowired
+    //private Environment environment;
+
+    //private String GETTIMESERIES_URL = environment.getProperty("dsbd.gettimeseries.url");
+
+    //@Value("${dsbd.gettimeseries.url}")
+    //private String GETTIMESERIES_URL;
+    private String GETTIMESERIES_URL = "http://gettimeseries:8080/gettimeseries";
 
     private String GETTIMESERIES_URL_QUERY = GETTIMESERIES_URL + "/query";
 
@@ -49,7 +54,7 @@ public class SubscriptionService {
     }
 
     public void processSubscriptions() {
-        publishLogOnTopic("... START thread processSubscription");
+        //publishLogOnTopic("... START thread processSubscription");
         try{
             int mode = 1;
             while(true){
@@ -96,12 +101,14 @@ public class SubscriptionService {
                     "\"last\":\"%sm\" }"; //mintime espresso in minuti
                 String params = String.format(_params, sub.getStation(), sub.getMintime() );
                 
-                publishLogOnTopic("... START checkDataOverLimit");        
+                //publishLogOnTopic("... START checkDataOverLimit");        
+                //publishLogOnTopic("URL: " + GETTIMESERIES_URL_QUERY);
                 JSONObject res = new JSONObject( sendHTTPRequest(GETTIMESERIES_URL_QUERY, params));
                 JSONArray serie = res.getJSONArray("dataframe");
                 boolean sopraSoglia = false;
                 boolean sottoSoglia = false;
                 float maxDefo = 0; 
+                publishLogOnTopic(String.format("estratte %s epoche per stazione %s",serie.length(), sub.getStation()));
                 for (int i = 0; i < serie.length(); i++) {
                     JSONObject epoca = (JSONObject)serie.get(i);
                     if( !JSONObject.NULL.equals(epoca.get("splp_op")) ){

@@ -54,14 +54,21 @@ services:
             timeout: 20s
             retries: 10     
 
-#  notifier:
-#    container_name: notifier
-#    build:
-#      dockerfile: Dockerfile
-#      context: ./notifier
-#    restart: always
-#    networks:
-#      - dsbd-net
+  notifier:
+    container_name: notifier
+    build:
+      dockerfile: Dockerfile
+      context: ./notifier
+    restart: always
+    depends_on:
+      - gettimeseries
+      - usersmanager
+      - kafka
+    networks:
+      - dsbd-net
+    environment:
+      dsbd.gettimeseries.url: "http://gettimeseries:8080/gettimeseries"
+      dsbd.usersmanager.url: "http://usersmanager:8080"
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -89,6 +96,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_LOG_RETENTION_MS: 10000
+      KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 10000
     networks:
       - dsbd-net
 

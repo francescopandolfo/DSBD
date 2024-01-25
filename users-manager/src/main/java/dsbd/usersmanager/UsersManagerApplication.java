@@ -15,7 +15,7 @@ public class UsersManagerApplication {
 		applicationContext = SpringApplication.run(UsersManagerApplication.class, args);
 
 		SubscriptionService subS = (SubscriptionService)applicationContext.getBean("subscriptionService");
-		subS.publishLogOnTopic("INVOKE thread processSubscription ... ");
+		//subS.publishLogOnTopic("INVOKE thread processSubscription ... ");
 
 		new Thread(() -> {
 			subS.processSubscriptions();

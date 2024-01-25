@@ -6,22 +6,20 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import org.springframework.stereotype.Service;
 
 @Service
 public class ConsumerService {
-
+    //private static String USERSMANAGER_URL      = "http://10.200.180.237:8002"; //solo per il debug
+    private static String USERSMANAGER_URL      = "http://usersmanager:8080";
+    private static String USERSMANAGER_SUBSCRIPTIONS = USERSMANAGER_URL + "/subscriptions/getall";
     
-    private static String USERSMANAGER_URL = "http://localhost:8002/subscriptions/getall";
-    //private static String USERSMANAGER_URL = "http://usersmanager:8080/subscriptions/getall";
     
     public static String getSubscriptions(){
         String toReturn = "NO RESPONSE!";
         try{
-            URL usersManagerUrl = new URL(USERSMANAGER_URL);
+            URL usersManagerUrl = new URL(USERSMANAGER_SUBSCRIPTIONS);
             HttpURLConnection conn = (HttpURLConnection) usersManagerUrl.openConnection();
 
             conn.setRequestMethod("GET");
