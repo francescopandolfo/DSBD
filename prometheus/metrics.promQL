@@ -1,0 +1,11 @@
+//usersmanager
+spring_data_repository_invocations_seconds_count{instance="usersmanager:8080", job="prometheus", exception="None", method="findAll", repository="SubscriptionRepository", state="SUCCESS"}
+SubscriptionsService_seconds_max{instance="usersmanager:8080", job="prometheus", method="processSubscriptions"}
+SubscriptionsService_seconds_count{instance="usersmanager:8080", job="prometheus", method="exceptionManager"}
+
+//gettimeserues
+get_time_seconds_count{instance="gettimeseries:8080", job="prometheus", exception="none",method="get" }
+spring_data_repository_invocations_seconds_max{exception="None", instance="usersmanager:8080", job="prometheus", method="findAll", repository="SubscriptionRepository", state="SUCCESS"}
+
+//kafka
+avg by (instance,mode) (irate(process_cpu_seconds_total{mode!='idle', job="kafka"}[1m]))

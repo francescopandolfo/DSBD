@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import dsbd.gettimeseries.models.TimeSeries;
 import dsbd.gettimeseries.services.TimeSeriesService;
+import io.micrometer.core.annotation.Timed;
 
 @Controller
 @RequestMapping(path= "/gettimeseries")
@@ -15,6 +16,7 @@ public class TimeSeriesController {
     TimeSeriesService service;
 
     @PostMapping(path= "/query")
+    @Timed(value = "query.time", description = "Tempo necessario per richiamare i dati da Influxdb")
     public @ResponseBody String query(@RequestBody TimeSeries ts){
         return service.get(ts);
     }

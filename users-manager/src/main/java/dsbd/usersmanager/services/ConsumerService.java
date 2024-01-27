@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import dsbd.usersmanager.models.Consumer;
 import dsbd.usersmanager.models.ConsumerRepository;
+import io.micrometer.core.annotation.Timed;
 
 @Service
 public class ConsumerService {

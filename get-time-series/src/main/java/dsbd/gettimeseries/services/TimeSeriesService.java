@@ -3,6 +3,7 @@ package dsbd.gettimeseries.services;
 import org.springframework.stereotype.Service;
 
 import dsbd.gettimeseries.models.TimeSeries;
+import io.micrometer.core.annotation.Timed;
 
 import java.net.URL;
 import java.util.ArrayList;

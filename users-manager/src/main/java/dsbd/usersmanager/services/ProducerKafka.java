@@ -6,10 +6,14 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Value;
+
+import dsbd.usersmanager.UsersManagerApplication;
 
 public class ProducerKafka {
     
-    private static String BOOTSTRAP_SERVER = "kafka:9092";
+    //@Value("${dsbd.kafka.url}")
+    private static String BOOTSTRAP_SERVER = UsersManagerApplication.debug ? "localhost:29092" : "kafka:9092";
     //private static String BOOTSTRAP_SERVER = "localhost:29092"; //per il debug
 
     /* args[0] = topic

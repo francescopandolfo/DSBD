@@ -5,24 +5,6 @@ version: '3.8'
 
 services:
   
-  usersmanager:
-    container_name: usersmanager
-    build:
-      dockerfile: Dockerfile
-      context: ./users-manager
-    restart: always
-    depends_on:
-      - gettimeseries
-      - kafka
-      - mysqldb
-    ports:
-      - 8002:8080
-    networks:
-      - dsbd-net      
-    environment:
-      spring.datasource.url: "jdbc:mysql://mysqldb:3306/dsbd-pandolfo?serverTimezone=UTC"
-      dsbd.gettimeseries.url: "http://gettimeseries:8080/gettimeseries"
-
   gettimeseries:
     container_name: gettimeseries
     build:
@@ -46,29 +28,50 @@ services:
     volumes:
       - ./data/db:/var/lib/mysql  #eseguire prima: mkdir -p ./data/db
     ports:
-      - 6033:3306
+      - 6033:3306  #solo per debug di usersmanager
+#    expose:
+      #- 3306
     networks:
       - dsbd-net
     healthcheck:
             test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
             timeout: 20s
-            retries: 10     
+            retries: 10
 
-  notifier:
-    container_name: notifier
+  usersmanager:
+    container_name: usersmanager
     build:
       dockerfile: Dockerfile
-      context: ./notifier
+      context: ./users-manager
     restart: always
     depends_on:
       - gettimeseries
-      - usersmanager
       - kafka
+      - mysqldb
+    ports:
+      - 8002:8080
     networks:
-      - dsbd-net
+      - dsbd-net      
     environment:
+      spring.datasource.url: "jdbc:mysql://mysqldb:3306/dsbd-pandolfo?serverTimezone=UTC"
       dsbd.gettimeseries.url: "http://gettimeseries:8080/gettimeseries"
-      dsbd.usersmanager.url: "http://usersmanager:8080"
+   
+
+#  notifier:
+#    container_name: notifier
+#    build:
+#      dockerfile: Dockerfile
+#      context: ./notifier
+#    restart: always
+#    depends_on:
+#      - gettimeseries
+#      - usersmanager
+#      - kafka
+#    networks:
+#      - dsbd-net
+#    environment:
+#      dsbd.gettimeseries.url: "http://gettimeseries:8080/gettimeseries"
+#      dsbd.usersmanager.url: "http://usersmanager:8080"
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -86,8 +89,8 @@ services:
     container_name: kafka
     depends_on:
       - zookeeper
-    ports: #da eliminare dopo il debug
-      - 29092:29092
+    ports: 
+      - 29092:29092 #solo per debug di usermanager o notifier
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -97,6 +100,30 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_LOG_RETENTION_MS: 10000
       KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 10000
+    networks:
+      - dsbd-net
+
+  kafka-exporter:
+    image: lightbend/kafka-lag-exporter:0.5.5
+    hostname: kafka-exporter
+    restart: always
+    ports:
+      - 9999:9999
+    networks:
+      - dsbd-net
+    volumes:
+      - ./kafka-exporter/:/opt/docker/conf/
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - 9090:9090
+    restart: unless-stopped
+    volumes:
+      - ./prometheus:/etc/prometheus
     networks:
       - dsbd-net
 

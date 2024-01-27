@@ -1,0 +1,32 @@
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets: []
+    scheme: http
+    timeout: 10s
+    api_version: v1
+scrape_configs:
+- job_name: prometheus
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /actuator/prometheus
+  scheme: http
+  static_configs:
+  - targets:
+    - usersmanager:8080
+    - gettimeseries:8080
+
+- job_name: kafka
+  honor_timestamps: true
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  metrics_path: /
+  scheme: http
+  static_configs:
+  - targets:
+    - kafka-exporter:9999

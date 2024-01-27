@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import dsbd.usersmanager.models.Consumer;
 import dsbd.usersmanager.services.ConsumerService;
+import io.micrometer.core.annotation.Timed;
 
 @Controller
 @RequestMapping(path= "/consumers")
