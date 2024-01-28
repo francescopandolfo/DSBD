@@ -4,7 +4,7 @@ SubscriptionsService_seconds_max{instance="usersmanager:8080", job="prometheus",
 SubscriptionsService_seconds_count{instance="usersmanager:8080", job="prometheus", method="exceptionManager"}
 
 //gettimeserues
-get_time_seconds_count{instance="gettimeseries:8080", job="prometheus", exception="none",method="get" }
+query_time_seconds_max{class="dsbd.gettimeseries.api.TimeSeriesController", exception="none", instance="gettimeseries:8080", job="prometheus", method="query"}
 spring_data_repository_invocations_seconds_max{exception="None", instance="usersmanager:8080", job="prometheus", method="findAll", repository="SubscriptionRepository", state="SUCCESS"}
 
 //kafka
