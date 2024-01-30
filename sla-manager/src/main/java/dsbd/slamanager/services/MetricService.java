@@ -152,11 +152,14 @@ public class MetricService {
     }
 
     private String composeParamsState(Metric metric){
-        String toReturn = String.format("avg_over_time(%s{job='%s', method='%s'}[1m])", metric.getName(), metric.getJob(), metric.getMethod());
+        String toReturn = String.format("%s{job='%s', method='%s'}", metric.getName(), metric.getJob(), metric.getMethod());
         if( metric.getFunction() != null)
             switch(metric.getFunction().equals(null) ? "" : metric.getFunction()){
+                case "round":
+                    toReturn = String.format("round(increase(%s{job='%s', method='%s'}[60s]))", metric.getName(), metric.getJob(), metric.getMethod());
+                    break;
                 case "rate":
-                    toReturn = String.format("rate(%s{job='%s', method='%s'}[1m])*50", metric.getName(), metric.getJob(), metric.getMethod());
+                    toReturn = String.format("rate(%s{job='%s', method='%s'}[1m])", metric.getName(), metric.getJob(), metric.getMethod());
                     break;
             }
         return "query=" + toReturn;

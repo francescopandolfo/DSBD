@@ -5,6 +5,7 @@ version: '3.8'
 
 services:
   
+#GET_TIME_SERIES
   gettimeseries:
     container_name: gettimeseries
     build:
@@ -15,6 +16,7 @@ services:
     networks:
       - dsbd-net      
 
+#MYSQL-DB
   mysqldb:
     image: "mysql"
     restart: always
@@ -33,11 +35,8 @@ services:
       #- 3306
     networks:
       - dsbd-net
-#    healthcheck:
-#            test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-#            timeout: 20s
-#            retries: 10
 
+#USER-MANAGER
   usersmanager:
     container_name: usersmanager
     build:
@@ -53,7 +52,7 @@ services:
     networks:
       - dsbd-net
    
-
+#NOTIFIER
   notifier:
     container_name: notifier
     build:
@@ -81,6 +80,7 @@ services:
     networks:
       - dsbd-net      
   
+#KAFKA  
   kafka:
     image: confluentinc/cp-kafka:latest
     container_name: kafka
@@ -111,6 +111,7 @@ services:
     volumes:
       - ./kafka-exporter/:/opt/docker/conf/
 
+#PROMETHEUS
   prometheus:
     image: prom/prometheus
     container_name: prometheus
@@ -123,6 +124,27 @@ services:
       - ./prometheus:/etc/prometheus
     networks:
       - dsbd-net
+
+#GRAFANA
+  grafana:
+    image: grafana/grafana:6.7.2
+    container_name: grafana
+    volumes:
+#      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    restart: unless-stopped
+    ports:
+    - 8005:3000
+    expose:
+      - 3000
+    networks:
+      - dsbd-net
+    labels:
+      org.label-schema.group: "monitoring"
 
 #SLA MANAGER
   mysql-sla:

@@ -9,3 +9,6 @@ spring_data_repository_invocations_seconds_max{exception="None", job="gettimeser
 
 //kafka
 avg by (instance,mode) (irate(process_cpu_seconds_total{mode!='idle', job="kafka"}[1m]))
+
+
+//
