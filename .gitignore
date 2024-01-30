@@ -106,3 +106,5 @@ data/db-sla/server-cert.pem
 data/db-sla/server-key.pem
 data/db-sla/undo_001
 data/db-sla/undo_002
+data/db/binlog.000049
+db-slamanager/Dockerfile

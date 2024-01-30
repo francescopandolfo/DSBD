@@ -1,7 +1,7 @@
 //usersmanager
 spring_data_repository_invocations_seconds_count{job="usersmanager", exception="None", method="findAll", repository="SubscriptionRepository", state="SUCCESS"}
 SubscriptionsService_seconds_max{job="usersmanager", method="processSubscriptions"}
-rate(SubscriptionsService_seconds_count{job="usersmanager", method="exceptionManager"}[1m])*50
+rate(UsersManagerApplication_seconds_count{job="usersmanager", method="exceptionManager"}[1m])*50
 
 //gettimeseries
 query_time_seconds_max{class="dsbd.gettimeseries.api.TimeSeriesController", job="gettimeseries", method="query"}
