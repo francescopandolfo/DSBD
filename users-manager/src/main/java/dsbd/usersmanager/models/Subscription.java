@@ -35,4 +35,9 @@ public class Subscription {
     public String getStation(){ return station; }
     public int getThreshold(){ return threshold; }
     public int getMintime(){ return mintime; }
+
+    public void setUsername(String username){ this.username = username; }
+    public void setStation(String station){ this.station = station; }
+    public void setThreshold(int threshold){ this.threshold = threshold; }
+    public void setMintime(int mintime){ this.mintime = mintime; }
 }

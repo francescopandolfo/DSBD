@@ -20,16 +20,16 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
+import dsbd.notifier.NotifierApplication;
+
 @Service
 public class EmailService {
 
     //@Value("${dsbd.usersmanager.url}")
-    private String USERSMANAGER_URL     = "http://usersmanager:8080";
-    //private String USERSMANAGER_URL     = "http://10.200.180.237:8002";   //solo per il debug
+    private String USERSMANAGER_URL = NotifierApplication.debug ? "http://10.200.100.235:8002" : "http://usersmanager:8080";
     
     //@Value("${dsbd.gettimeseries.url}")
-    private String GETTIMESERIES_URL    = "http://gettimeseries:8080/gettimeseries";
-    //private String GETTIMESERIES_URL    = "http://10.200.180.237:8001/gettimeseries"; //solo per il debug
+    private String GETTIMESERIES_URL = NotifierApplication.debug ? "http://10.200.100.235:8001/gettimeseries" : "http://gettimeseries:8080/gettimeseries";
 
     private String USERSMANAGER_CONSUMER = USERSMANAGER_URL + "/consumers";
     private String GETTIMESERIES_QUERY = GETTIMESERIES_URL + "/query";

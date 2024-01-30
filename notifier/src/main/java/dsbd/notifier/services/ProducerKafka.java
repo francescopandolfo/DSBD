@@ -7,10 +7,11 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 
+import dsbd.notifier.NotifierApplication;
+
 public class ProducerKafka {
     
-    private static String BOOTSTRAP_SERVER = "kafka:9092";
-    //private static String BOOTSTRAP_SERVER = "localhost:29092"; //solo per il debug
+    private static String BOOTSTRAP_SERVER = NotifierApplication.debug ? "localhost:29092" : "kafka:9092";
 
     /* args[0] = topic
      * args[1] = message */

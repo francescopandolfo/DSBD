@@ -6,10 +6,17 @@
     "configurations": [
         {
             "type": "java",
-            "name": "UserManagerApplication",
+            "name": "Ecomm1Application",
             "request": "launch",
-            "mainClass": "dsbd.usermanager.UserManagerApplication",
-            "projectName": "user-manager"
+            "mainClass": "com.example.ecomm1.Ecomm1Application",
+            "projectName": "ecomm1"
+        },
+        {
+            "type": "java",
+            "name": "SlaManagerApplication",
+            "request": "launch",
+            "mainClass": "dsbd.slamanager.SlaManagerApplication",
+            "projectName": "sla-manager"
         },
         {
             "type": "java",

@@ -33,10 +33,10 @@ services:
       #- 3306
     networks:
       - dsbd-net
-    healthcheck:
-            test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-            timeout: 20s
-            retries: 10
+#    healthcheck:
+#            test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+#            timeout: 20s
+#            retries: 10
 
   usersmanager:
     container_name: usersmanager
@@ -52,23 +52,23 @@ services:
       - 8002:8080
     networks:
       - dsbd-net      
-    environment:
-      spring.datasource.url: "jdbc:mysql://mysqldb:3306/dsbd-pandolfo?serverTimezone=UTC"
-      dsbd.gettimeseries.url: "http://gettimeseries:8080/gettimeseries"
+#    environment:
+#      spring.datasource.url: "jdbc:mysql://mysqldb:3306/dsbd-pandolfo?serverTimezone=UTC"
+#      dsbd.gettimeseries.url: "http://gettimeseries:8080/gettimeseries"
    
 
-#  notifier:
-#    container_name: notifier
-#    build:
-#      dockerfile: Dockerfile
-#      context: ./notifier
-#    restart: always
-#    depends_on:
-#      - gettimeseries
-#      - usersmanager
-#      - kafka
-#    networks:
-#      - dsbd-net
+  notifier:
+    container_name: notifier
+    build:
+      dockerfile: Dockerfile
+      context: ./notifier
+    restart: always
+    depends_on:
+      - gettimeseries
+      - usersmanager
+      - kafka
+    networks:
+      - dsbd-net
 #    environment:
 #      dsbd.gettimeseries.url: "http://gettimeseries:8080/gettimeseries"
 #      dsbd.usersmanager.url: "http://usersmanager:8080"
@@ -120,12 +120,65 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
     ports:
-      - 9090:9090
+      - 8003:9090
     restart: unless-stopped
     volumes:
       - ./prometheus:/etc/prometheus
     networks:
       - dsbd-net
+
+#SLA MANAGER
+  mysqldbsla:
+    image: "mysql"
+    restart: always
+    container_name: mysqldbsla
+    environment:
+      MYSQL_DATABASE: slamanager
+      MYSQL_USER: francesco
+      MYSQL_PASSWORD: pandolfo
+      MYSQL_ROOT_PASSWORD: toor
+      MYSQL_HOST: localhost
+    volumes:
+      - ./data/db-sla:/var/lib/mysql  #eseguire prima: mkdir -p ./data/db-sla
+    ports:
+      - 6034:3306  #solo per debug di sla-manager
+#    expose:
+#      - 3306
+    networks:
+      - dsbd-net
+
+#  mysqlsla:
+#    container_name: mysqlsla
+#    build:
+#      dockerfile: Dockerfile
+#      context: ./db-slamanager
+#    networks:
+#      - dsbd-net
+#    ports:
+#      - 8005:3306
+
+  sla-manager:
+    container_name: sla-manager
+    build:
+      dockerfile: Dockerfile
+      context: ./sla-manager
+    depends_on:
+      - mysqldbsla
+    links:
+      - mysqldbsla
+    networks:
+      - dsbd-net
+    ports:
+      - 8004:8080
+    restart:
+      on-failure
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldbsla:3306/slamanager
+      SPRING_DATASOURCE_USERNAME: francesco
+      SPRING_DATASOURCE_PASSWORD: pandolfo
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+#    volumes:
+#      - ./data/db-sla:/var/lib/mysql
 
 networks:
   dsbd-net:

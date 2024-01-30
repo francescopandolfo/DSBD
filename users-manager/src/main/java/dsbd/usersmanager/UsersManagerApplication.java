@@ -2,7 +2,6 @@ package dsbd.usersmanager;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,23 +10,22 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Service;
 
-import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
-import io.micrometer.core.instrument.Counter;
 import dsbd.usersmanager.services.ProducerKafka;
 import dsbd.usersmanager.services.SubscriptionService;
 
 @SpringBootApplication
 public class UsersManagerApplication {
+
+	
+	public static boolean debug = false;
 	
 	@Autowired
 	public static MeterRegistry registry;
 
-	private static ApplicationContext applicationContext;
-	public static boolean debug = false;
+	public static ApplicationContext applicationContext;
 	private static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
 	
 	public static void main(String[] args) {
@@ -56,8 +54,8 @@ public class UsersManagerApplication {
 	
 
 	public static void exceptionManager(Exception ex){
-		Timer timer = Timer.builder("SubscriptionsService").tag("method", "exceptionManager").register(registry);
-                    timer.record( () -> publishLogOnTopic(String.format("ERRORE su SubscriptionService: %s", ex.getMessage()))
+		Timer timer = Timer.builder("UsersManagerApplication").tag("method", "exceptionManager").register(registry);
+                    timer.record( () -> publishLogOnTopic(String.format("ERRORE su UsersManagerApplication: %s", ex.getMessage()))
 					);
     }
 

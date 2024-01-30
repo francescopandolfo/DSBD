@@ -14,6 +14,8 @@ import dsbd.notifier.services.ConsumerService;
 @SpringBootApplication
 public class NotifierApplication {
 
+	public static boolean debug = false;
+
 	private static String GROUP_ID = "defo-group";
 	private static ArrayList<String> oldThreads; //usata per verificare se vengono creati nuovi topic o eliminati di esistenti
 

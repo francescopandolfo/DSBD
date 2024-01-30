@@ -2,7 +2,6 @@ package dsbd.usersmanager.services;
 
 
 import org.springframework.stereotype.Service;
-import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 
@@ -25,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import dsbd.usersmanager.UsersManagerApplication;
 import dsbd.usersmanager.models.Subscription;
 import dsbd.usersmanager.models.SubscriptionRepository;
-//import dsbd.usersmanager.services.ProducerKafka;
 
 @Service
 public class SubscriptionService {
@@ -41,8 +39,7 @@ public class SubscriptionService {
     //@Value("${dsbd.gettimeseries.url}")
     //private String GETTIMESERIES_URL;
     
-    private String GETTIMESERIES_URL = UsersManagerApplication.debug ? "http://10.200.180.237:8001/gettimeseries" : "http://gettimeseries:8080/gettimeseries";
-    //private String GETTIMESERIES_URL = "http://10.200.180.237:8001/gettimeseries"; //solo per debug
+    private String GETTIMESERIES_URL = UsersManagerApplication.debug ? "http://10.200.100.235:8001/gettimeseries" : "http://gettimeseries:8080/gettimeseries";
 
     private String GETTIMESERIES_URL_QUERY = GETTIMESERIES_URL + "/query";
 

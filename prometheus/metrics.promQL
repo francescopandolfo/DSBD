@@ -1,11 +1,11 @@
 //usersmanager
-spring_data_repository_invocations_seconds_count{instance="usersmanager:8080", job="prometheus", exception="None", method="findAll", repository="SubscriptionRepository", state="SUCCESS"}
-SubscriptionsService_seconds_max{instance="usersmanager:8080", job="prometheus", method="processSubscriptions"}
-SubscriptionsService_seconds_count{instance="usersmanager:8080", job="prometheus", method="exceptionManager"}
+spring_data_repository_invocations_seconds_count{job="usersmanager", exception="None", method="findAll", repository="SubscriptionRepository", state="SUCCESS"}
+SubscriptionsService_seconds_max{job="usersmanager", method="processSubscriptions"}
+rate(SubscriptionsService_seconds_count{job="usersmanager", method="exceptionManager"}[1m])*50
 
-//gettimeserues
-query_time_seconds_max{class="dsbd.gettimeseries.api.TimeSeriesController", exception="none", instance="gettimeseries:8080", job="prometheus", method="query"}
-spring_data_repository_invocations_seconds_max{exception="None", instance="usersmanager:8080", job="prometheus", method="findAll", repository="SubscriptionRepository", state="SUCCESS"}
+//gettimeseries
+query_time_seconds_max{class="dsbd.gettimeseries.api.TimeSeriesController", job="gettimeseries", method="query"}
+spring_data_repository_invocations_seconds_max{exception="None", job="gettimeseries", method="findAll", repository="SubscriptionRepository", state="SUCCESS"}
 
 //kafka
 avg by (instance,mode) (irate(process_cpu_seconds_total{mode!='idle', job="kafka"}[1m]))

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,14 +26,20 @@ public class SubscriptionController {
         return service.add(sub);
     }
 
-    @DeleteMapping(path = "/unsubscribe")
-    public @ResponseBody String unsubscribe(@RequestBody Subscription sub){
+    @DeleteMapping(path = "/unsubscribe/{username}&{station}&{threshold}&{mintime}")
+    public @ResponseBody String unsubscribe(@PathVariable String username, @PathVariable String station, @PathVariable String threshold, @PathVariable String mintime){
+        Subscription sub = new Subscription();
+        sub.setUsername(username);
+        sub.setStation(station);
+        sub.setThreshold(Integer.valueOf(threshold));
+        sub.setMintime(Integer.valueOf(mintime));
+
         service.remove(sub);
         return String.format("Cancellazione da %s-%s-%s avvenuta con successo!",sub.getStation(), sub.getThreshold(), sub.getMintime());
     }
     
 
-    @GetMapping(path = "/getall")
+    @GetMapping(path = "/all")
     public @ResponseBody Iterable<Subscription> getAll(){
         return service.getAll();
     }

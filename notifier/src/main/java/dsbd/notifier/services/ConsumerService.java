@@ -9,12 +9,13 @@ import java.net.URL;
 
 import org.springframework.stereotype.Service;
 
+import dsbd.notifier.NotifierApplication;
+
 @Service
 public class ConsumerService {
-    //private static String USERSMANAGER_URL      = "http://10.200.180.237:8002"; //solo per il debug
-    private static String USERSMANAGER_URL      = "http://usersmanager:8080";
-    private static String USERSMANAGER_SUBSCRIPTIONS = USERSMANAGER_URL + "/subscriptions/getall";
-    
+
+    private static String USERSMANAGER_URL = NotifierApplication.debug ? "http://10.200.100.235:8002" : "http://usersmanager:8080";
+    private static String USERSMANAGER_SUBSCRIPTIONS = USERSMANAGER_URL + "/subscriptions/all";
     
     public static String getSubscriptions(){
         String toReturn = "NO RESPONSE!";
