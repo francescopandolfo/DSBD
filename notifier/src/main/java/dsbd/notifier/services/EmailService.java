@@ -25,10 +25,7 @@ import dsbd.notifier.NotifierApplication;
 @Service
 public class EmailService {
 
-    //@Value("${dsbd.usersmanager.url}")
     private String USERSMANAGER_URL = NotifierApplication.debug ? "http://10.200.100.235:8002" : "http://usersmanager:8080";
-    
-    //@Value("${dsbd.gettimeseries.url}")
     private String GETTIMESERIES_URL = NotifierApplication.debug ? "http://10.200.100.235:8001/gettimeseries" : "http://gettimeseries:8080/gettimeseries";
 
     private String USERSMANAGER_CONSUMER = USERSMANAGER_URL + "/consumers";
@@ -67,6 +64,31 @@ public class EmailService {
                             + "Saluti", username, station, threshold, mintime, mean_max[0], mean_max[1]);
 
             String mailObject = String.format("Supero soglia deformazione del suolo per %s", station+"-"+threshold+"-"+mintime);
+            
+            sendEmail(emailTo, mailObject, body);    
+        }
+        catch(Exception ex){}
+    }
+
+    public void newEmailToClose(String username, String topic, String station, String threshold, String mintime){
+        //estrai email da consumer
+        try{ 
+            JSONObject consumer = new JSONObject( sendHTTPRequest_GET(USERSMANAGER_CONSUMER+"/"+username) );
+            String emailTo = (String)consumer.get("email");
+
+            //estraggo la serie degli ultimi "minitime" minuti per poterne calcolare ..
+            String _params = "{\"stationcode\":\"%s\" , " +
+                    "\"last\":\"%sm\" }";
+            String params = String.format(_params, station, mintime );
+
+            JSONObject serieTemporale = new JSONObject( sendHTTPRequest_POST(GETTIMESERIES_QUERY, params ) );
+            String[] mean_max = getMeanTS(serieTemporale);
+
+            String body = String.format("Ciao %s,\n\n"
+                            + "la deformazione del suolo calcolata su %s é rientrata nei valori ordinari.\n\n"
+                            + "Saluti", username, station);
+
+            String mailObject = String.format("Supero soglia deformazione del suolo per %s - CLOSED", station+"-"+threshold+"-"+mintime);
             
             sendEmail(emailTo, mailObject, body);    
         }

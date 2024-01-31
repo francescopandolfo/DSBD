@@ -2,6 +2,8 @@ package dsbd.usersmanager.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
@@ -37,9 +39,14 @@ public class _Subscription {
     @Column(name = "mintime")
     private Integer mintime;
 
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private Integer id;
+
     //public int getId(){ return id; }
     public String getUsername(){ return consumer.getUsername(); }
     public String getStation(){ return station; }
     public int getThreshold(){ return threshold; }
     public int getMintime(){ return mintime; }
+    public int getId(){ return id; }
 }

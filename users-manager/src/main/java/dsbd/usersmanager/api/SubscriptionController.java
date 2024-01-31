@@ -22,20 +22,14 @@ public class SubscriptionController {
     SubscriptionService service;
 
     @PostMapping(path = "/register")
-    public @ResponseBody Subscription register(@RequestBody Subscription sub){
+    public @ResponseBody String register(@RequestBody Subscription sub){
         return service.add(sub);
     }
 
-    @DeleteMapping(path = "/unsubscribe/{username}&{station}&{threshold}&{mintime}")
-    public @ResponseBody String unsubscribe(@PathVariable String username, @PathVariable String station, @PathVariable String threshold, @PathVariable String mintime){
-        Subscription sub = new Subscription();
-        sub.setUsername(username);
-        sub.setStation(station);
-        sub.setThreshold(Integer.valueOf(threshold));
-        sub.setMintime(Integer.valueOf(mintime));
-
-        service.remove(sub);
-        return String.format("Cancellazione da %s-%s-%s avvenuta con successo!",sub.getStation(), sub.getThreshold(), sub.getMintime());
+    //@DeleteMapping(path = "/unsubscribe/{username}&{station}&{threshold}&{mintime}")
+    @DeleteMapping(path = "/unsubscribe/{id}")
+    public @ResponseBody String unsubscribe(@PathVariable String id){
+        return service.remove(Integer.valueOf(id));
     }
     
 

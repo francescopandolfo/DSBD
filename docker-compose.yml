@@ -1,11 +1,8 @@
-#https://github.com/mcicolella/spring-boot-microservices/tree/master
-#https://github.com/mirianacorsaro/DSBD-project/tree/main
-
 version: '3.8'
 
 services:
   
-#GET_TIME_SERIES
+################### GET_TIME_SERIES ####################
   gettimeseries:
     container_name: gettimeseries
     build:
@@ -16,11 +13,11 @@ services:
     networks:
       - dsbd-net      
 
-#MYSQL-DB
-  mysqldb:
+########### #USERS-MANAGER ########################
+  mysql-usersmanager:
     image: "mysql"
     restart: always
-    container_name: mysqldb
+    container_name: mysql-usersmanager
     environment:
       MYSQL_DATABASE: dsbd-pandolfo
       MYSQL_USER: francesco
@@ -28,15 +25,12 @@ services:
       MYSQL_ROOT_PASSWORD: toor
       MYSQL_HOST: localhost
     volumes:
-      - ./data/db:/var/lib/mysql  #eseguire prima: mkdir -p ./data/db
+      - ./data/db-usersmanager:/var/lib/mysql  #eseguire prima: mkdir -p ./data/db-usersmanager
 #    ports:
 #      - 6033:3306  #solo per debug di usersmanager
-#    expose:
-      #- 3306
     networks:
       - dsbd-net
 
-#USER-MANAGER
   usersmanager:
     container_name: usersmanager
     build:
@@ -46,13 +40,31 @@ services:
     depends_on:
       - gettimeseries
       - kafka
-      - mysqldb
+      - mysql-usersmanager
     ports:
       - 8002:8080
     networks:
       - dsbd-net
    
-#NOTIFIER
+################## NOTIFIER #######################
+
+  mysql-notifier:
+    image: "mysql"
+    restart: always
+    container_name: mysql-notifier
+    environment:
+      MYSQL_DATABASE: dsbd-pandolfo
+      MYSQL_USER: francesco
+      MYSQL_PASSWORD: pandolfo
+      MYSQL_ROOT_PASSWORD: toor
+      MYSQL_HOST: localhost
+    volumes:
+      - ./data/db-notifier:/var/lib/mysql  #eseguire prima: mkdir -p ./data/db-notifier
+#    ports:
+#      - 6033:3306  #solo per debug di notifier
+    networks:
+      - dsbd-net
+
   notifier:
     container_name: notifier
     build:
@@ -65,9 +77,6 @@ services:
       - kafka
     networks:
       - dsbd-net
-#    environment:
-#      dsbd.gettimeseries.url: "http://gettimeseries:8080/gettimeseries"
-#      dsbd.usersmanager.url: "http://usersmanager:8080"
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -86,10 +95,10 @@ services:
     container_name: kafka
     depends_on:
       - zookeeper
-#    ports: 
-#      - 29092:29092 #solo per debug di usermanager o notifier
-    expose:
-      - 29092
+    ports: 
+      - 29092:29092 #solo per debug di usermanager o notifier
+#    expose:
+#      - 29092
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181

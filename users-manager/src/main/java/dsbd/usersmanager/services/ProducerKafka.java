@@ -12,7 +12,6 @@ import dsbd.usersmanager.UsersManagerApplication;
 
 public class ProducerKafka {
     
-    //@Value("${dsbd.kafka.url}")
     private static String BOOTSTRAP_SERVER = UsersManagerApplication.debug ? "localhost:29092" : "kafka:9092";
     //private static String BOOTSTRAP_SERVER = "localhost:29092"; //per il debug
 

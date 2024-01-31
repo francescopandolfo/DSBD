@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.json.*;
@@ -22,6 +23,7 @@ import org.json.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import dsbd.usersmanager.UsersManagerApplication;
+import dsbd.usersmanager.models.Consumer;
 import dsbd.usersmanager.models.Subscription;
 import dsbd.usersmanager.models.SubscriptionRepository;
 
@@ -30,14 +32,6 @@ public class SubscriptionService {
 
     @Autowired
     private  MeterRegistry registry;
-
-    //@Autowired
-    //private Environment environment;
-
-    //private String GETTIMESERIES_URL = environment.getProperty("dsbd.gettimeseries.url");
-
-    //@Value("${dsbd.gettimeseries.url}")
-    //private String GETTIMESERIES_URL;
     
     private String GETTIMESERIES_URL = UsersManagerApplication.debug ? "http://10.200.100.235:8001/gettimeseries" : "http://gettimeseries:8080/gettimeseries";
 
@@ -48,13 +42,31 @@ public class SubscriptionService {
     @Autowired
     private SubscriptionRepository repository;
 
-    public Subscription add(Subscription sub){
-        //Subscription newOne = new Subscription(sub.),);
-        return repository.save(sub);
+    @Autowired
+    private ConsumerService consumerService;
+
+    public String add(Subscription sub){
+        Optional<Consumer> cons = consumerService.get(sub.getUsername());
+        if(!cons.isPresent()) return "Username non presente!";
+
+        for(Subscription x : getAll()){
+            if( x.getUsername().equals(sub.getUsername()) && 
+                x.getStation().equals(sub.getStation()) && 
+                x.getThreshold() == sub.getThreshold() && 
+                x.getMintime() == sub.getMintime() ) return "La presente sottoscrizione è già presente in archivio.";
+        }
+        
+        repository.save(sub);
+        return "Nuova sottoscrizione avvenuta con successo";
     }
 
-    public void remove(Subscription sub){
-        repository.delete(sub);
+    public String remove(int id){
+        Optional<Subscription> sub = repository.findById(id);
+        if(sub.isPresent()) {
+            repository.delete(sub.get());     
+            return String.format("Cancellazione di %s-%s-%s-%s avvenuta con successo!",sub.get().getUsername(), sub.get().getStation(), sub.get().getThreshold(), sub.get().getMintime());
+        }
+        return "L'id inserito non è presente in archivio";
     }
 
     public Iterable<Subscription> getAll(){
@@ -143,7 +155,19 @@ public class SubscriptionService {
                         ProducerKafka.main(args);
                     }
                     catch(Exception ex){ UsersManagerApplication.exceptionManager(ex); }
-                }       
+                }
+                else{
+                    LocalDateTime now = LocalDateTime.now();
+                    //i valori sono regolari: lo pubblico su un topic collegato al precedente in modo che il notificatore può comunicare la chiusra della notifica
+                    String[] args = new String[2];
+                    args[0] = String.format("%s-%s-%s [DATA-OK]", sub.getStation(), sub.getThreshold(), sub.getMintime());
+                    args[1] = String.format("%s -> %s-%s-%s: dati regolari", dtf.format(now), sub.getStation(), sub.getThreshold(), sub.getMintime());
+                    try{
+                        UsersManagerApplication.publishLogOnTopic(String.format("%s -> %s : %s ", dtf.format(now), args[0], args[1]));
+                        ProducerKafka.main(args);
+                    }
+                    catch(Exception ex){ UsersManagerApplication.exceptionManager(ex); }
+                }
             }
         }
         catch(Exception ex){ UsersManagerApplication.exceptionManager(ex); }

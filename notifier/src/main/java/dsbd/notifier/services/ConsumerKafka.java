@@ -11,14 +11,19 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import dsbd.notifier.NotifierApplication;
+import dsbd.notifier.models.Notification;
 
 public class ConsumerKafka {
 
     @Autowired
     EmailService eService;
+
+    private static NotificationService nService = (NotificationService)NotifierApplication.applicationContext.getBean("notificationService");
     
     static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
      
@@ -31,6 +36,7 @@ public class ConsumerKafka {
         String station      = args[2];
         String threshold    = args[3];
         String mintime      = args[4];
+        Integer id          = Integer.valueOf(args[5]);
         
 
         // create consumer configs
@@ -55,12 +61,64 @@ public class ConsumerKafka {
             for (ConsumerRecord<String, String> record : records){
                 System.out.println("Topic: " + topic + ", Value: " + record.value());
                 
-                publishLogOnTopic(String.format("%s -> Invio notifica a \"%s\"", topic, username));
-                EmailService eService = new EmailService();
-                eService.newEmail(username, topic, station, threshold, mintime);
+                //prima di inviare una nuova notifica per questa sottoscrizione occorre che non ve ne siano già aperte
+                if(nService.add(id)){
+                    publishLogOnTopic(String.format("%s -> Invio notifica a \"%s\"", topic, username));
+                    EmailService eService = new EmailService();
+                    eService.newEmail(username, topic, station, threshold, mintime);
+                }
+                else{
+                    publishLogOnTopic(String.format("%s -> Notifica ancora aperta!", topic));
+                }
+
+                
             }
         }
     }
+
+    public static void topicCheck(String[] args) {
+        String topic = String.format( "%s-%s-%s [DATA-OK]", args[2],args[3],args[4] ); //nome del topic: DEVE ESSERE uguale a quello prodotto dal microservizio usersmanager
+        String groupId      = args[0];
+        String username     = args[1];
+        String station      = args[2];
+        String threshold    = args[3];
+        String mintime      = args[4];
+        Integer id          = Integer.valueOf(args[5]);
+        
+
+        // create consumer configs
+        Properties properties = new Properties();
+        properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVER);
+        properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+        properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+
+        // create consumer
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
+
+        // subscribe consumer to our topic(s)
+        consumer.subscribe(Arrays.asList(topic));
+
+        // poll for new data
+        while(true){
+            ConsumerRecords<String, String> records =
+                    consumer.poll(Duration.ofMillis(100));
+
+            for (ConsumerRecord<String, String> record : records){
+                System.out.println("Topic: " + topic + ", Value: " + record.value());
+                
+                //verifico la presenza di notifiche aperte e le chiudo
+                Notification resp = nService.close(id);
+                if(resp != null){ //trovata la notifica aperta (già è stata chiusa sul db)
+                    publishLogOnTopic(String.format("%s -> Invio notifica a \"%s\"", topic, username));
+                    EmailService eService = new EmailService();
+                    eService.newEmailToClose(username, topic, station, threshold, mintime);
+                }
+            }
+        }
+    }
+
 
     public static void publishLogOnTopic(String message){
         LocalDateTime now = LocalDateTime.now();

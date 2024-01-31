@@ -6,13 +6,6 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Ecomm1Application",
-            "request": "launch",
-            "mainClass": "com.example.ecomm1.Ecomm1Application",
-            "projectName": "ecomm1"
-        },
-        {
-            "type": "java",
             "name": "SlaManagerApplication",
             "request": "launch",
             "mainClass": "dsbd.slamanager.SlaManagerApplication",

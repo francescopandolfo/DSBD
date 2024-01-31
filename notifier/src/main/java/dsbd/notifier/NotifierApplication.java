@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 
 import dsbd.notifier.services.ConsumerKafka;
 import dsbd.notifier.services.ConsumerService;
@@ -16,11 +17,13 @@ public class NotifierApplication {
 
 	public static boolean debug = false;
 
+	public static ApplicationContext applicationContext;
+
 	private static String GROUP_ID = "defo-group";
 	private static ArrayList<String> oldThreads; //usata per verificare se vengono creati nuovi topic o eliminati di esistenti
 
 	public static void main(String[] args) {
-		SpringApplication.run(NotifierApplication.class, args);
+		applicationContext = SpringApplication.run(NotifierApplication.class, args);
 
 		oldThreads = new ArrayList<String>();
 		subscribeTopics();
@@ -39,17 +42,24 @@ public class NotifierApplication {
 			for (int i = 0; i < subs.length(); i++){
 				JSONObject sub = (JSONObject)subs.get(i);
 				
-				String[] args = new String[5];
+				String[] args = new String[6];
 				args[0] = GROUP_ID;
 				args[1] = (String)sub.get("username");
 				args[2] = (String)sub.get("station");
 				args[3] = sub.get("threshold").toString();
 				args[4] = sub.get("mintime").toString();
+				args[5] = sub.get("id").toString();
 
 				String nomeThread = String.format("%s-%s-%s-%s",args[1],args[2],args[3],args[4]);
 
+				//iscrizione al topic che notifica il supero soglia
 				new Thread(() -> {
 					ConsumerKafka.main(args);
+				}, nomeThread).start();	
+
+				//iscrizione al topic che notifica la regolarità dei dati (per chiudere le notifiche aperte)
+				new Thread(() -> {
+					ConsumerKafka.topicCheck(args);
 				}, nomeThread).start();	
 			}
 		}
@@ -68,12 +78,13 @@ public class NotifierApplication {
 						String nomeThread = String.format( "%s-%s-%s-%s", sub.get("username"), sub.get("station"), sub.get("threshold"), sub.get("mintime") );
 						if( !oldThreads.contains(nomeThread) ){
 							//nuova sottoscrizione
-							String[] args = new String[5];
+							String[] args = new String[6];
 							args[0] = GROUP_ID;
 							args[1] = (String)sub.get("username");
 							args[2] = (String)sub.get("station");
 							args[3] = sub.get("threshold").toString();
 							args[4] = sub.get("mintime").toString();
+							args[5] = sub.get("id").toString();
 
 							oldThreads.add(nomeThread);
 
