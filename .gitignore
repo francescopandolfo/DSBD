@@ -108,3 +108,4 @@ data/db-sla/undo_001
 data/db-sla/undo_002
 data/db/binlog.000049
 db-slamanager/Dockerfile
+data/db-sla/binlog.000004

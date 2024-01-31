@@ -67,4 +67,10 @@ public class MetricController {
     public @ResponseBody Iterable<String> getViolations(){
         return service.getViolations();
     }
+
+    @GetMapping(path="/violations/probability/{minutes}")
+    public @ResponseBody Iterable<String> getProbabilityViolation(@PathVariable String minutes){
+        return service.getProbabilityViolation(minutes);
+
+    }
 }

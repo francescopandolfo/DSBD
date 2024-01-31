@@ -119,16 +119,15 @@ public class MetricService {
         ArrayList<String> violazioni = new ArrayList<String>();
 
         for( Metric x : repository.findAll() ){
-            violazioni.add(getViolation(x, 1));
-            violazioni.add(getViolation(x, 3));
-            violazioni.add(getViolation(x, 6));
+            violazioni.add(String.format("{ %s-%s-%s : { violations_%sh : %s} }", x.getName(), x.getJob(), x.getMethod(), 1, getViolation(x, 1) ));
+            violazioni.add(String.format("{ %s-%s-%s : { violations_%sh : %s} }", x.getName(), x.getJob(), x.getMethod(), 3, getViolation(x, 3) ));
+            violazioni.add(String.format("{ %s-%s-%s : { violations_%sh : %s} }", x.getName(), x.getJob(), x.getMethod(), 6, getViolation(x, 6) ));
             violazioni.add("");
         }
-
         return violazioni;
     }
 
-    private String getViolation(Metric metric, int last){   //last in minuti
+    private int getViolation(Metric metric, int last){   //last in minuti
         String queryUrl = PROMETHEUS_URL + "/api/v1/query_range";
         String res = SlaManagerApplication.sendHTTPRequest("GET", queryUrl, composeParamsViolation(metric, last)); 
         try{
@@ -142,13 +141,10 @@ public class MetricService {
                 Float value = Float.valueOf(((JSONArray)_values.get(i)).get(1).toString());
                 if (value < metric.getMin_value() || value > metric.getMax_value()) contaViolazioni++;
             }
-
-            String vm = String.format("{ %s-%s-%s : { violations_%sh : %s} }", 
-                metric.getName(), metric.getJob(), metric.getMethod(), last, contaViolazioni);
                 
-            return vm;
+            return contaViolazioni;
         }
-        catch(Exception ex){ return "ERRORE: " + ex.getMessage();}
+        catch(Exception ex){ return -1; }
     }
 
     private String composeParamsState(Metric metric){
@@ -171,10 +167,32 @@ public class MetricService {
         String end = String.format("end=%s", Instant.now().toString());
         String step = "step=1m";
 
-
-
         //&start=2024-01-29T22:00:00.000Z&end=2024-01-29T22:10:00.000Z&step=1m
         return toReturn + String.format("&%s&%s&%s", start, end, step);
+    }
+
+    public ArrayList<String> getProbabilityViolation(String minutes){
+        ArrayList<String> toReturn = new ArrayList<String>();
+
+        for( Metric x : repository.findAll() ){
+            int num_viol = getViolation(x, 1);
+            Double violMin = num_viol / 60.0;
+            Double prob = violMin * Double.valueOf(minutes) * 100;
+            if(prob > 100) prob = 100.0;
+            if(prob == 0){
+                int _num_viol = getViolation(x, 24);
+                Double _violMin = _num_viol / 1440.0;
+                prob = _violMin * Double.valueOf(minutes) * 100;
+                if(prob > 100) prob = 100.0;
+                if(prob == 0 ) prob = 0.001;
+            }
+
+            String _prob_ = SlaManagerApplication.getFloatFormatted(Float.valueOf(prob.toString()), 2);
+
+            toReturn.add( String.format("{ %s-%s-%s : %s%% }", x.getName(), x.getJob(), x.getMethod(), _prob_ ));
+        }
+
+        return toReturn;
     }
 
 

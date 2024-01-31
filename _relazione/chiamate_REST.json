@@ -1,0 +1,880 @@
+{
+  "version": 6,
+  "entities": [
+    {
+      "entity": {
+        "type": "Project",
+        "id": "8bcf1408-21e3-437d-b397-50ce2a4d4b4c",
+        "name": "sla-manager"
+      },
+      "children": [
+        {
+          "entity": {
+            "type": "Service",
+            "id": "0ef83565-ed06-42ce-a663-ad581f53c12a",
+            "name": "discovery"
+          },
+          "children": [
+            {
+              "entity": {
+                "type": "Request",
+                "method": {
+                  "link": "http://tools.ietf.org/html/rfc7231#section-4.3.1",
+                  "name": "GET"
+                },
+                "body": {
+                  "formBody": {
+                    "overrideContentType": true,
+                    "encoding": "application/x-www-form-urlencoded",
+                    "items": []
+                  },
+                  "bodyType": "Text"
+                },
+                "uri": {
+                  "query": {
+                    "delimiter": "&",
+                    "items": []
+                  },
+                  "scheme": {
+                    "name": "http",
+                    "version": "V11"
+                  },
+                  "host": "10.200.100.235:8004",
+                  "path": "/slamanager/discoveryJobs"
+                },
+                "id": "ed924f35-7d9f-40fc-83e1-2f01570d3eb7",
+                "name": "discovery Jobs",
+                "headers": []
+              }
+            },
+            {
+              "entity": {
+                "type": "Request",
+                "method": {
+                  "requestBody": true,
+                  "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+                  "name": "POST"
+                },
+                "body": {
+                  "formBody": {
+                    "overrideContentType": true,
+                    "encoding": "application/x-www-form-urlencoded",
+                    "items": []
+                  },
+                  "bodyType": "Text",
+                  "textBody": "{ \"job\" : \"usersmanager\" }"
+                },
+                "uri": {
+                  "query": {
+                    "delimiter": "&",
+                    "items": []
+                  },
+                  "scheme": {
+                    "name": "http",
+                    "version": "V11"
+                  },
+                  "host": "10.200.100.235:8004",
+                  "path": "/slamanager/discoveryMetrics"
+                },
+                "id": "a0a98978-a926-47a0-b7c6-132ec4d81116",
+                "name": "discovery metrics",
+                "headers": [
+                  {
+                    "enabled": true,
+                    "name": "Content-Type",
+                    "value": "application/json"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "entity": {
+            "type": "Service",
+            "id": "e59f15a0-6b6c-46c4-93ea-6c375f555d45",
+            "name": "register"
+          },
+          "children": [
+            {
+              "entity": {
+                "type": "Request",
+                "method": {
+                  "requestBody": true,
+                  "link": "http://tools.ietf.org/html/rfc7231#section-4.3.4",
+                  "name": "PUT"
+                },
+                "body": {
+                  "formBody": {
+                    "overrideContentType": true,
+                    "encoding": "application/x-www-form-urlencoded",
+                    "items": [
+                      {
+                        "enabled": true,
+                        "type": "Text",
+                        "name": "name",
+                        "value": "process_cpu_seconds_total"
+                      },
+                      {
+                        "enabled": true,
+                        "type": "Text",
+                        "name": "min_value",
+                        "value": "0.002"
+                      },
+                      {
+                        "enabled": true,
+                        "type": "Text",
+                        "name": "max_value",
+                        "value": "0.015"
+                      }
+                    ]
+                  },
+                  "bodyType": "Text",
+                  "textBody": "{\n  \t\"name\": \"query_time_seconds_max\",\n\t\"job\": \"gettimeseries\",\n\t\"method\": \"query\",\n  \t\"min_value\": 0.03,\n  \t\"max_value\": 0.08,\n  \t\"function\" : null\n}"
+                },
+                "uri": {
+                  "query": {
+                    "delimiter": "&",
+                    "items": []
+                  },
+                  "scheme": {
+                    "name": "http",
+                    "version": "V11"
+                  },
+                  "host": "10.200.100.235:8004",
+                  "path": "/slamanager/metrics/register"
+                },
+                "id": "ef93a869-5977-4af7-87d0-d73d42fa0fa3",
+                "name": "get-time-series query_time_seconds_max",
+                "headers": [
+                  {
+                    "enabled": true,
+                    "name": "Content-Type",
+                    "value": "application/json"
+                  }
+                ]
+              }
+            },
+            {
+              "entity": {
+                "type": "Request",
+                "method": {
+                  "requestBody": true,
+                  "link": "http://tools.ietf.org/html/rfc7231#section-4.3.4",
+                  "name": "PUT"
+                },
+                "body": {
+                  "formBody": {
+                    "overrideContentType": true,
+                    "encoding": "application/x-www-form-urlencoded",
+                    "items": [
+                      {
+                        "enabled": true,
+                        "type": "Text",
+                        "name": "name",
+                        "value": "process_cpu_seconds_total"
+                      },
+                      {
+                        "enabled": true,
+                        "type": "Text",
+                        "name": "min_value",
+                        "value": "0.002"
+                      },
+                      {
+                        "enabled": true,
+                        "type": "Text",
+                        "name": "max_value",
+                        "value": "0.015"
+                      }
+                    ]
+                  },
+                  "bodyType": "Text",
+                  "textBody": "{\n  \t\"name\": \"process_cpu_seconds_total\",\n\t\"job\": \"kafka\",\n\t\"method\": \"\",\n  \t\"min_value\":0.0055,\n  \t\"max_value\":0.0067,\n  \t\"function\" : \"rate\"\n}"
+                },
+                "uri": {
+                  "query": {
+                    "delimiter": "&",
+                    "items": []
+                  },
+                  "scheme": {
+                    "name": "http",
+                    "version": "V11"
+                  },
+                  "host": "10.200.100.235:8004",
+                  "path": "/slamanager/metrics/register"
+                },
+                "id": "bd6239a6-c471-4f5a-a4a9-35c03cc5fead",
+                "name": "kafka process_cpu_seconds_total",
+                "headers": [
+                  {
+                    "enabled": true,
+                    "name": "Content-Type",
+                    "value": "application/json"
+                  }
+                ]
+              }
+            },
+            {
+              "entity": {
+                "type": "Request",
+                "method": {
+                  "requestBody": true,
+                  "link": "http://tools.ietf.org/html/rfc7231#section-4.3.4",
+                  "name": "PUT"
+                },
+                "body": {
+                  "formBody": {
+                    "overrideContentType": true,
+                    "encoding": "application/x-www-form-urlencoded",
+                    "items": [
+                      {
+                        "enabled": true,
+                        "type": "Text",
+                        "name": "name",
+                        "value": "process_cpu_seconds_total"
+                      },
+                      {
+                        "enabled": true,
+                        "type": "Text",
+                        "name": "min_value",
+                        "value": "0.002"
+                      },
+                      {
+                        "enabled": true,
+                        "type": "Text",
+                        "name": "max_value",
+                        "value": "0.015"
+                      }
+                    ]
+                  },
+                  "bodyType": "Text",
+                  "textBody": "{\n  \t\"name\": \"UsersManagerApplication_seconds_count\",\n\t\"job\": \"usersmanager\",\n\t\"method\": \"exceptionManager\",\n  \t\"min_value\":0,\n  \t\"max_value\":3,\n\t\"function\": \"round\"\n}"
+                },
+                "uri": {
+                  "query": {
+                    "delimiter": "&",
+                    "items": []
+                  },
+                  "scheme": {
+                    "name": "http",
+                    "version": "V11"
+                  },
+                  "host": "10.200.100.235:8004",
+                  "path": "/slamanager/metrics/register"
+                },
+                "id": "884089a4-18a9-4348-b767-07c2ac7ef03c",
+                "name": "users-manager SubscriptionsService_seconds_count (ERRORE)",
+                "headers": [
+                  {
+                    "enabled": true,
+                    "name": "Content-Type",
+                    "value": "application/json"
+                  }
+                ]
+              }
+            },
+            {
+              "entity": {
+                "type": "Request",
+                "method": {
+                  "requestBody": true,
+                  "link": "http://tools.ietf.org/html/rfc7231#section-4.3.4",
+                  "name": "PUT"
+                },
+                "body": {
+                  "formBody": {
+                    "overrideContentType": true,
+                    "encoding": "application/x-www-form-urlencoded",
+                    "items": [
+                      {
+                        "enabled": true,
+                        "type": "Text",
+                        "name": "name",
+                        "value": "process_cpu_seconds_total"
+                      },
+                      {
+                        "enabled": true,
+                        "type": "Text",
+                        "name": "min_value",
+                        "value": "0.002"
+                      },
+                      {
+                        "enabled": true,
+                        "type": "Text",
+                        "name": "max_value",
+                        "value": "0.015"
+                      }
+                    ]
+                  },
+                  "bodyType": "Text",
+                  "textBody": "{\n  \t\"name\": \"SubscriptionsService_seconds_max\",\n\t\"job\": \"usersmanager\",\n\t\"method\": \"processSubscriptions\",\n\t\"min_value\": 0.1,\n\t\"max_value\": 0.35,\n  \t\"function\" : null\n}"
+                },
+                "uri": {
+                  "query": {
+                    "delimiter": "&",
+                    "items": []
+                  },
+                  "scheme": {
+                    "name": "http",
+                    "version": "V11"
+                  },
+                  "host": "10.200.100.235:8004",
+                  "path": "/slamanager/metrics/register"
+                },
+                "id": "971efafe-fcae-44e1-b5e5-15baead103b1",
+                "name": "users-manager SubscriptionsService_seconds_max",
+                "headers": [
+                  {
+                    "enabled": true,
+                    "name": "Content-Type",
+                    "value": "application/json"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "entity": {
+            "type": "Request",
+            "method": {
+              "link": "http://tools.ietf.org/html/rfc7231#section-4.3.5",
+              "name": "DELETE"
+            },
+            "body": {
+              "formBody": {
+                "overrideContentType": true,
+                "encoding": "application/x-www-form-urlencoded",
+                "items": []
+              },
+              "bodyType": "Text"
+            },
+            "uri": {
+              "query": {
+                "delimiter": "&",
+                "items": []
+              },
+              "scheme": {
+                "name": "http",
+                "version": "V11"
+              },
+              "host": "10.200.100.235:8004",
+              "path": "/slamanager/metrics/process_cpu_seconds_total&kafka&"
+            },
+            "id": "672bf183-ad63-4486-8f1d-b82aa9ff9654",
+            "name": "delete metric",
+            "headers": []
+          }
+        },
+        {
+          "entity": {
+            "type": "Request",
+            "method": {
+              "link": "http://tools.ietf.org/html/rfc7231#section-4.3.1",
+              "name": "GET"
+            },
+            "body": {
+              "formBody": {
+                "overrideContentType": true,
+                "encoding": "application/x-www-form-urlencoded",
+                "items": []
+              },
+              "bodyType": "Text"
+            },
+            "uri": {
+              "query": {
+                "delimiter": "&",
+                "items": []
+              },
+              "scheme": {
+                "name": "http",
+                "version": "V11"
+              },
+              "host": "10.200.100.235:8004",
+              "path": "/slamanager/metrics/all"
+            },
+            "id": "96d47471-8b60-4d44-a6a3-5c2c54da977d",
+            "name": "get all metrics",
+            "headers": []
+          }
+        },
+        {
+          "entity": {
+            "type": "Request",
+            "method": {
+              "link": "http://tools.ietf.org/html/rfc7231#section-4.3.1",
+              "name": "GET"
+            },
+            "body": {
+              "formBody": {
+                "overrideContentType": true,
+                "encoding": "application/x-www-form-urlencoded",
+                "items": []
+              },
+              "bodyType": "Text"
+            },
+            "uri": {
+              "query": {
+                "delimiter": "&",
+                "items": []
+              },
+              "scheme": {
+                "name": "http",
+                "version": "V11"
+              },
+              "host": "10.200.100.235:8004",
+              "path": "/slamanager/metrics/process_cpu_seconds_total&kafka"
+            },
+            "id": "ebb7b2d3-d5b5-4740-9242-d32c3cc05046",
+            "name": "get metric",
+            "headers": []
+          }
+        },
+        {
+          "entity": {
+            "type": "Request",
+            "method": {
+              "link": "http://tools.ietf.org/html/rfc7231#section-4.3.1",
+              "name": "GET"
+            },
+            "body": {
+              "formBody": {
+                "overrideContentType": true,
+                "encoding": "application/x-www-form-urlencoded",
+                "items": []
+              },
+              "bodyType": "Text"
+            },
+            "uri": {
+              "query": {
+                "delimiter": "&",
+                "items": []
+              },
+              "scheme": {
+                "name": "http",
+                "version": "V11"
+              },
+              "host": "10.200.100.235:8004",
+              "path": "/slamanager/getState"
+            },
+            "id": "fc5835b3-6c4e-4219-8f39-34303971b531",
+            "name": "get state",
+            "headers": []
+          }
+        },
+        {
+          "entity": {
+            "type": "Request",
+            "method": {
+              "link": "http://tools.ietf.org/html/rfc7231#section-4.3.1",
+              "name": "GET"
+            },
+            "body": {
+              "formBody": {
+                "overrideContentType": true,
+                "encoding": "application/x-www-form-urlencoded",
+                "items": []
+              },
+              "bodyType": "Text"
+            },
+            "uri": {
+              "query": {
+                "delimiter": "&",
+                "items": []
+              },
+              "scheme": {
+                "name": "http",
+                "version": "V11"
+              },
+              "host": "10.200.100.235:8004",
+              "path": "/slamanager/violations"
+            },
+            "id": "279beb95-8bbd-401c-b99f-7065047b0d64",
+            "name": "get violations",
+            "headers": []
+          }
+        },
+        {
+          "entity": {
+            "type": "Request",
+            "method": {
+              "link": "http://tools.ietf.org/html/rfc7231#section-4.3.1",
+              "name": "GET"
+            },
+            "body": {
+              "formBody": {
+                "overrideContentType": true,
+                "encoding": "application/x-www-form-urlencoded",
+                "items": []
+              },
+              "bodyType": "Text"
+            },
+            "uri": {
+              "query": {
+                "delimiter": "&",
+                "items": []
+              },
+              "scheme": {
+                "name": "http",
+                "version": "V11"
+              },
+              "host": "10.200.100.235:8004",
+              "path": "/slamanager/violations/probability/10"
+            },
+            "id": "3834411d-1f07-4e2d-8002-940d53e225eb",
+            "name": "get violations probability",
+            "headers": []
+          }
+        }
+      ]
+    },
+    {
+      "entity": {
+        "type": "Project",
+        "id": "7fd2ce8c-0faf-490a-ab9b-a698ae8e52f0",
+        "name": "users-manager"
+      },
+      "children": [
+        {
+          "entity": {
+            "type": "Service",
+            "id": "b3e06a6f-0e7a-41b2-88b5-b0d0fc2f4b8a",
+            "name": "consumers"
+          },
+          "children": [
+            {
+              "entity": {
+                "type": "Request",
+                "method": {
+                  "link": "http://tools.ietf.org/html/rfc7231#section-4.3.5",
+                  "name": "DELETE"
+                },
+                "body": {
+                  "formBody": {
+                    "overrideContentType": true,
+                    "encoding": "application/x-www-form-urlencoded",
+                    "items": []
+                  },
+                  "bodyType": "Text"
+                },
+                "uri": {
+                  "query": {
+                    "delimiter": "&",
+                    "items": []
+                  },
+                  "scheme": {
+                    "name": "http",
+                    "version": "V11"
+                  },
+                  "host": "10.200.100.235:8002",
+                  "path": "/consumers/andreabianchi"
+                },
+                "id": "792b14ff-6574-4a93-8d81-dde0a28a6043",
+                "name": "delete",
+                "headers": []
+              }
+            },
+            {
+              "entity": {
+                "type": "Request",
+                "method": {
+                  "link": "http://tools.ietf.org/html/rfc7231#section-4.3.1",
+                  "name": "GET"
+                },
+                "body": {
+                  "formBody": {
+                    "overrideContentType": true,
+                    "encoding": "application/x-www-form-urlencoded",
+                    "items": []
+                  },
+                  "bodyType": "Text"
+                },
+                "uri": {
+                  "query": {
+                    "delimiter": "&",
+                    "items": []
+                  },
+                  "scheme": {
+                    "name": "http",
+                    "version": "V11"
+                  },
+                  "host": "10.200.100.235:8002",
+                  "path": "/consumers/frapan"
+                },
+                "id": "624bd6f6-6ec9-45fa-a757-2819bbcaa2ea",
+                "name": "get",
+                "headers": []
+              }
+            },
+            {
+              "entity": {
+                "type": "Request",
+                "method": {
+                  "link": "http://tools.ietf.org/html/rfc7231#section-4.3.1",
+                  "name": "GET"
+                },
+                "body": {
+                  "formBody": {
+                    "overrideContentType": true,
+                    "encoding": "application/x-www-form-urlencoded",
+                    "items": []
+                  },
+                  "bodyType": "Text",
+                  "textBody": "{\n  "
+                },
+                "uri": {
+                  "query": {
+                    "delimiter": "&",
+                    "items": []
+                  },
+                  "scheme": {
+                    "name": "http",
+                    "version": "V11"
+                  },
+                  "host": "10.200.100.235:8002",
+                  "path": "/consumers/all"
+                },
+                "id": "07646d6f-fa47-4cc9-be51-b05a1b5edc4e",
+                "name": "get all",
+                "headers": []
+              }
+            },
+            {
+              "entity": {
+                "type": "Request",
+                "method": {
+                  "requestBody": true,
+                  "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+                  "name": "POST"
+                },
+                "body": {
+                  "formBody": {
+                    "overrideContentType": true,
+                    "encoding": "application/x-www-form-urlencoded",
+                    "items": []
+                  },
+                  "bodyType": "Text",
+                  "textBody": "{\n  \"username\":\"andreabianchi\",\n  \"email\":\"andrea@bianchi\"\n}"
+                },
+                "uri": {
+                  "query": {
+                    "delimiter": "&",
+                    "items": []
+                  },
+                  "scheme": {
+                    "name": "http",
+                    "version": "V11"
+                  },
+                  "host": "10.200.100.235:8002",
+                  "path": "/consumers/register"
+                },
+                "id": "381cae2a-ffb0-4bac-96a9-5ecda29fbd49",
+                "name": "register",
+                "headers": [
+                  {
+                    "enabled": true,
+                    "name": "Content-Type",
+                    "value": "application/json"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "entity": {
+            "type": "Service",
+            "id": "162181fc-89e0-43c2-9efc-87368b744ee0",
+            "name": "subscriptions"
+          },
+          "children": [
+            {
+              "entity": {
+                "type": "Request",
+                "method": {
+                  "link": "http://tools.ietf.org/html/rfc7231#section-4.3.1",
+                  "name": "GET"
+                },
+                "body": {
+                  "formBody": {
+                    "overrideContentType": true,
+                    "encoding": "application/x-www-form-urlencoded",
+                    "items": []
+                  },
+                  "bodyType": "Text"
+                },
+                "uri": {
+                  "query": {
+                    "delimiter": "&",
+                    "items": []
+                  },
+                  "scheme": {
+                    "name": "http",
+                    "version": "V11"
+                  },
+                  "host": "10.200.100.235:8002",
+                  "path": "/subscriptions/all"
+                },
+                "id": "d668dd32-50e6-4fab-a1f3-66da9a296711",
+                "name": "get all",
+                "headers": []
+              }
+            },
+            {
+              "entity": {
+                "type": "Request",
+                "method": {
+                  "requestBody": true,
+                  "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+                  "name": "POST"
+                },
+                "body": {
+                  "formBody": {
+                    "overrideContentType": true,
+                    "encoding": "application/x-www-form-urlencoded",
+                    "items": []
+                  },
+                  "bodyType": "Text",
+                  "textBody": "{\n  \"username\":\"andreabianchi\",\n  \"station\":\"EPLU\",\n  \"threshold\":5,\n  \"mintime\":4\n}"
+                },
+                "uri": {
+                  "query": {
+                    "delimiter": "&",
+                    "items": []
+                  },
+                  "scheme": {
+                    "name": "http",
+                    "version": "V11"
+                  },
+                  "host": "10.200.100.235:8002",
+                  "path": "/subscriptions/register"
+                },
+                "id": "24f795c8-2a1c-4926-9436-66c2d7ac133d",
+                "name": "register",
+                "headers": [
+                  {
+                    "enabled": true,
+                    "name": "Content-Type",
+                    "value": "application/json"
+                  }
+                ]
+              }
+            },
+            {
+              "entity": {
+                "type": "Request",
+                "method": {
+                  "link": "http://tools.ietf.org/html/rfc7231#section-4.3.5",
+                  "name": "DELETE"
+                },
+                "body": {
+                  "formBody": {
+                    "overrideContentType": true,
+                    "encoding": "application/x-www-form-urlencoded",
+                    "items": []
+                  },
+                  "bodyType": "Text",
+                  "textBody": "{\n  \"username\":\"andreabianchi\",\n  \"station\":\"EPLU\",\n  \"threshold\":5,\n  \"mintime\":4\n}"
+                },
+                "uri": {
+                  "query": {
+                    "delimiter": "&",
+                    "items": []
+                  },
+                  "scheme": {
+                    "name": "http",
+                    "version": "V11"
+                  },
+                  "host": "10.200.100.235:8002",
+                  "path": "/subscriptions/unsubscribe/andreabianchi&EPLU&5&4"
+                },
+                "id": "2d2ca02c-182e-4b55-8847-8c188bd5523b",
+                "name": "unsubscribe",
+                "headers": []
+              }
+            }
+          ]
+        },
+        {
+          "entity": {
+            "type": "Request",
+            "method": {
+              "requestBody": true,
+              "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+              "name": "POST"
+            },
+            "body": {
+              "formBody": {
+                "overrideContentType": true,
+                "encoding": "application/x-www-form-urlencoded",
+                "items": []
+              },
+              "bodyType": "Text",
+              "textBody": "nuovo errore"
+            },
+            "uri": {
+              "query": {
+                "delimiter": "&",
+                "items": []
+              },
+              "scheme": {
+                "name": "http",
+                "version": "V11"
+              },
+              "host": "10.200.100.235:8002",
+              "path": "/subscriptions/error"
+            },
+            "id": "6f3078f4-f26a-4ae7-9505-1492bda7b56d",
+            "name": "send error",
+            "headers": [
+              {
+                "enabled": true,
+                "name": "Content-Type",
+                "value": "application/text"
+              }
+            ]
+          }
+        },
+        {
+          "entity": {
+            "type": "Request",
+            "method": {
+              "requestBody": true,
+              "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+              "name": "POST"
+            },
+            "body": {
+              "formBody": {
+                "overrideContentType": true,
+                "encoding": "application/x-www-form-urlencoded",
+                "items": []
+              },
+              "bodyType": "Text",
+              "textBody": "messaggio proventiente dal controller di usermanager"
+            },
+            "uri": {
+              "query": {
+                "delimiter": "&",
+                "items": []
+              },
+              "scheme": {
+                "name": "http",
+                "version": "V11"
+              },
+              "host": "10.200.100.235:8002",
+              "path": "/subscriptions/kafka"
+            },
+            "id": "12a3eafa-b069-4048-aa1e-ee98b1a62b55",
+            "name": "sent to kafka",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

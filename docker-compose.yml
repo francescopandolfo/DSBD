@@ -86,8 +86,10 @@ services:
     container_name: kafka
     depends_on:
       - zookeeper
-    ports: 
-      - 29092:29092 #solo per debug di usermanager o notifier
+#    ports: 
+#      - 29092:29092 #solo per debug di usermanager o notifier
+    expose:
+      - 29092
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -173,8 +175,6 @@ services:
       context: ./sla-manager
     depends_on:
       - mysql-sla
-    #links:
-    #  - mysql-sla
     networks:
       - dsbd-net
     ports:

@@ -1,14 +1,33 @@
 //usersmanager
 spring_data_repository_invocations_seconds_count{job="usersmanager", exception="None", method="findAll", repository="SubscriptionRepository", state="SUCCESS"}
 SubscriptionsService_seconds_max{job="usersmanager", method="processSubscriptions"}
-rate(UsersManagerApplication_seconds_count{job="usersmanager", method="exceptionManager"}[1m])*50
+rate(UsersManagerApplication_seconds_count{job="usersmanager", method="exceptionManager"}[1m])
 
 //gettimeseries
 query_time_seconds_max{class="dsbd.gettimeseries.api.TimeSeriesController", job="gettimeseries", method="query"}
-spring_data_repository_invocations_seconds_max{exception="None", job="gettimeseries", method="findAll", repository="SubscriptionRepository", state="SUCCESS"}
 
 //kafka
-avg by (instance,mode) (irate(process_cpu_seconds_total{mode!='idle', job="kafka"}[1m]))
+rate(process_cpu_seconds_total{job="kafka"}[1m])
 
 
-//
+
+//predictions	
+predict_linear(SubscriptionsService_seconds_max{job="usersmanager", method="processSubscriptions"}[1h],600)
+predict_linear(rate(process_cpu_seconds_total{job="kafka"}[1m])[1h],600)    NO
+predict_linear(query_time_seconds_max{class="dsbd.gettimeseries.api.TimeSeriesController", job="gettimeseries", method="query"}[1h],600)
+
+
+//seasonality
+
+sum(increase(query_time_seconds_max{class="dsbd.gettimeseries.api.TimeSeriesController", job="gettimeseries", method="query"}[5m]))
+#1
+(  max_over_time(query_time_seconds_max{class="dsbd.gettimeseries.api.TimeSeriesController", job="gettimeseries", method="query"}[5m]) 
+- avg_over_time(query_time_seconds_max{class="dsbd.gettimeseries.api.TimeSeriesController", job="gettimeseries", method="query"}[5m])
+) / 
+stddev_over_time(query_time_seconds_max{class="dsbd.gettimeseries.api.TimeSeriesController", job="gettimeseries", method="query"}[5m])
+
+#2
+(  avg_over_time(query_time_seconds_max{class="dsbd.gettimeseries.api.TimeSeriesController", job="gettimeseries", method="query"}[1m])
+- avg_over_time(query_time_seconds_max{class="dsbd.gettimeseries.api.TimeSeriesController", job="gettimeseries", method="query"}[1h])
+) 
+/ stddev_over_time(query_time_seconds_max{class="dsbd.gettimeseries.api.TimeSeriesController", job="gettimeseries", method="query"}[1h])
