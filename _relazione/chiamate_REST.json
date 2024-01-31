@@ -654,7 +654,7 @@
                     "items": []
                   },
                   "bodyType": "Text",
-                  "textBody": "{\n  \"username\":\"andreabianchi\",\n  \"email\":\"andrea@bianchi\"\n}"
+                  "textBody": "{\n  \"username\":\"francesco.pandolfo\",\n  \"email\":\"francesco.pandolfo@studium.unict.it\"\n}"
                 },
                 "uri": {
                   "query": {
@@ -735,7 +735,7 @@
                     "items": []
                   },
                   "bodyType": "Text",
-                  "textBody": "{\n  \"username\":\"andreabianchi\",\n  \"station\":\"EPLU\",\n  \"threshold\":5,\n  \"mintime\":4\n}"
+                  "textBody": "{\n  \"username\":\"francesco.pandolfo\",\n  \"station\":\"EPMN\",\n  \"threshold\":5,\n  \"mintime\":4\n}"
                 },
                 "uri": {
                   "query": {
@@ -786,7 +786,7 @@
                     "version": "V11"
                   },
                   "host": "10.200.100.235:8002",
-                  "path": "/subscriptions/unsubscribe/andreabianchi&EPLU&5&4"
+                  "path": "/subscriptions/unsubscribe/152"
                 },
                 "id": "2d2ca02c-182e-4b55-8847-8c188bd5523b",
                 "name": "unsubscribe",
